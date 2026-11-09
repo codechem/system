@@ -3,5 +3,8 @@
   "compilerOptions": {
     "types": []
   },
-  "exclude": ["src/**/*.test.ts"]
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.stories.ts"
+  ]
 }

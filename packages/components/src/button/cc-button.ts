@@ -6,9 +6,10 @@ import { LitElement, css, html } from 'lit';
  * @slot - Label text
  * @slot leading - Icon before the label
  * @slot trailing - Icon after the label
- * @csspart button - The inner native <button>
+ * @csspart button - The inner native button element
  */
 export class CcButton extends LitElement {
+  /** @internal */
   static formAssociated = true;
 
   static properties = {
@@ -19,6 +20,7 @@ export class CcButton extends LitElement {
     type: { type: String, reflect: true },
   };
 
+  /** @internal */
   private internals = this.attachInternals();
 
   declare variant: 'filled' | 'outlined' | 'text';
@@ -37,6 +39,7 @@ export class CcButton extends LitElement {
     this.addEventListener('click', this.handleHostClick);
   }
 
+  /** @internal */
   private handleHostClick = (event: MouseEvent) => {
     if (this.disabled) {
       event.preventDefault();

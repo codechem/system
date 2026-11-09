@@ -1,0 +1,19 @@
+{
+  "name": "@codechem/storybook",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@codechem/components": "*",
+    "@codechem/tokens": "*"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.6.6",
+    "@storybook/addon-docs": "^10.6.6",
+    "@storybook/web-components-vite": "^10.6.6",
+    "storybook": "^10.6.6"
+  }
+}

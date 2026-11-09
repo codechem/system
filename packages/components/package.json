@@ -11,7 +11,8 @@
     "./button.js": {
       "types": "./dist/button/cc-button.d.ts",
       "default": "./dist/button/cc-button.js"
-    }
+    },
+    "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
   "files": [
@@ -22,7 +23,6 @@
   "scripts": {
     "analyze": "cem analyze",
     "build": "cem analyze && tsc -p tsconfig.build.json",
-    "dev": "cem analyze && vite",
     "test": "vitest run"
   },
   "dependencies": {
