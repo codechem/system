@@ -20,6 +20,10 @@
       "types": "./dist/badge/cc-badge.d.ts",
       "default": "./dist/badge/cc-badge.js"
     },
+    "./checkbox.js": {
+      "types": "./dist/checkbox/cc-checkbox.d.ts",
+      "default": "./dist/checkbox/cc-checkbox.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
