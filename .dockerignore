@@ -1,0 +1,16 @@
+.git
+**/node_modules
+**/dist
+**/storybook-static
+**/custom-elements.json
+**/vscode.html-custom-data.json
+**/.vitest
+**/.vite
+.impeccable
+.env
+.env.*
+*.log
+*.tgz
+.DS_Store
+Dockerfile
+.dockerignore
