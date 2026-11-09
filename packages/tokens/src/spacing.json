@@ -1,0 +1,196 @@
+{
+  "Margin": {
+    "margin-0-25": {
+      "$type": "dimension",
+      "$value": "{Unit.0-25x}"
+    },
+    "margin-0-5": {
+      "$type": "dimension",
+      "$value": "{Unit.0-5x}"
+    },
+    "margin-1": {
+      "$type": "dimension",
+      "$value": "{Unit.1x}"
+    },
+    "margin-1-5": {
+      "$type": "dimension",
+      "$value": "{Unit.1-5x}"
+    },
+    "margin-1-75": {
+      "$type": "dimension",
+      "$value": "{Unit.1-75x}"
+    },
+    "margin-2": {
+      "$type": "dimension",
+      "$value": "{Unit.2x}"
+    },
+    "margin-2-5": {
+      "$type": "dimension",
+      "$value": "{Unit.2-5x}"
+    },
+    "margin-3": {
+      "$type": "dimension",
+      "$value": "{Unit.3x}"
+    },
+    "margin-4": {
+      "$type": "dimension",
+      "$value": "{Unit.4x}"
+    },
+    "margin-5": {
+      "$type": "dimension",
+      "$value": "{Unit.5x}"
+    },
+    "margin-6": {
+      "$type": "dimension",
+      "$value": "{Unit.6x}"
+    },
+    "margin-7": {
+      "$type": "dimension",
+      "$value": "{Unit.7x}"
+    },
+    "margin-8": {
+      "$type": "dimension",
+      "$value": "{Unit.8x}"
+    },
+    "margin-9": {
+      "$type": "dimension",
+      "$value": "{Unit.9x}"
+    },
+    "margin-10": {
+      "$type": "dimension",
+      "$value": "{Unit.10x}"
+    }
+  },
+  "Padding": {
+    "padding-0": {
+      "$type": "dimension",
+      "$value": "{Unit.0}"
+    },
+    "padding-0-25": {
+      "$type": "dimension",
+      "$value": "{Unit.0-25x}"
+    },
+    "padding-0-5": {
+      "$type": "dimension",
+      "$value": "{Unit.0-5x}"
+    },
+    "padding-1": {
+      "$type": "dimension",
+      "$value": "{Unit.1x}"
+    },
+    "padding-1-5": {
+      "$type": "dimension",
+      "$value": "{Unit.1-5x}"
+    },
+    "padding-1-75": {
+      "$type": "dimension",
+      "$value": "{Unit.1-75x}"
+    },
+    "padding-2": {
+      "$type": "dimension",
+      "$value": "{Unit.2x}"
+    },
+    "padding-2-5": {
+      "$type": "dimension",
+      "$value": "{Unit.2-5x}"
+    },
+    "padding-3": {
+      "$type": "dimension",
+      "$value": "{Unit.3x}"
+    },
+    "padding-4": {
+      "$type": "dimension",
+      "$value": "{Unit.4x}"
+    },
+    "padding-5": {
+      "$type": "dimension",
+      "$value": "{Unit.5x}"
+    },
+    "padding-6": {
+      "$type": "dimension",
+      "$value": "{Unit.6x}"
+    },
+    "padding-7": {
+      "$type": "dimension",
+      "$value": "{Unit.7x}"
+    },
+    "padding-8": {
+      "$type": "dimension",
+      "$value": "{Unit.8x}"
+    },
+    "padding-9": {
+      "$type": "dimension",
+      "$value": "{Unit.9x}"
+    },
+    "padding-10": {
+      "$type": "dimension",
+      "$value": "{Unit.10x}"
+    }
+  },
+  "Gap": {
+    "gap-0": {
+      "$type": "dimension",
+      "$value": "{Unit.0}"
+    },
+    "gap-0-25": {
+      "$type": "dimension",
+      "$value": "{Unit.0-25x}"
+    },
+    "gap-0-5": {
+      "$type": "dimension",
+      "$value": "{Unit.0-5x}"
+    },
+    "gap-1": {
+      "$type": "dimension",
+      "$value": "{Unit.1x}"
+    },
+    "gap-1-5": {
+      "$type": "dimension",
+      "$value": "{Unit.1-5x}"
+    },
+    "gap-1-75": {
+      "$type": "dimension",
+      "$value": "{Unit.1-75x}"
+    },
+    "gap-2": {
+      "$type": "dimension",
+      "$value": "{Unit.2x}"
+    },
+    "gap-2-5": {
+      "$type": "dimension",
+      "$value": "{Unit.2-5x}"
+    },
+    "gap-3": {
+      "$type": "dimension",
+      "$value": "{Unit.3x}"
+    },
+    "gap-4": {
+      "$type": "dimension",
+      "$value": "{Unit.4x}"
+    },
+    "gap-5": {
+      "$type": "dimension",
+      "$value": "{Unit.5x}"
+    },
+    "gap-6": {
+      "$type": "dimension",
+      "$value": "{Unit.6x}"
+    },
+    "gap-7": {
+      "$type": "dimension",
+      "$value": "{Unit.7x}"
+    },
+    "gap-8": {
+      "$type": "dimension",
+      "$value": "{Unit.8x}"
+    },
+    "gap-9": {
+      "$type": "dimension",
+      "$value": "{Unit.9x}"
+    },
+    "gap-10": {
+      "$type": "dimension",
+      "$value": "{Unit.10x}"
+    }
+  }
+}
