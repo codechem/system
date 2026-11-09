@@ -16,6 +16,10 @@
       "types": "./dist/alert/cc-alert.d.ts",
       "default": "./dist/alert/cc-alert.js"
     },
+    "./badge.js": {
+      "types": "./dist/badge/cc-badge.d.ts",
+      "default": "./dist/badge/cc-badge.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
