@@ -111,7 +111,7 @@ packages/
       index.ts      Exports every component
 apps/
   storybook/
-    .storybook/     Storybook config: loads tokens.css, the Kumbh Sans font and the manifest
+    .storybook/     Storybook config: loads tokens.css, the Kumbh Sans and Material Icons Round fonts and the manifest
 ```
 
 ## Adding a component
@@ -141,11 +141,14 @@ Search for a token name in `packages/tokens/dist/tokens.css` to see its final va
 
 > The packages aren't published to npm yet. Until they are, use them inside this repo or install a local tarball made with `npm pack`.
 
-The components read their styles from the token CSS variables, so an app loads the tokens and the font once, then imports the components:
+The components read their styles from the token CSS variables and draw their icons with the [Material Icons Round](https://fonts.google.com/icons?icon.set=Material+Icons&icon.style=Rounded) font. An app loads the tokens and both fonts once, then imports the components:
 
 ```html
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:YOPQ,wght@40..300,100..900&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" />
 ```
+
+Without the icon font, icons show up as their names (e.g. "check_box"). The same font gives you every other Material icon for slots, such as a button icon: `<span slot="leading" class="material-icons-round" aria-hidden="true">add</span>`. Keep `aria-hidden` so screen readers don't read the icon name as part of the label.
 
 ```js
 import '@codechem/tokens/tokens.css';

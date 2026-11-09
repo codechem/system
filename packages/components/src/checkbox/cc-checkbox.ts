@@ -1,9 +1,6 @@
-import { LitElement, css, html, nothing, svg } from 'lit';
+import { LitElement, css, html, nothing } from 'lit';
 import { live } from 'lit/directives/live.js';
-
-const boxPath = 'M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3Z';
-const checkedIcon = svg`<path fill-rule="evenodd" d="${boxPath}M10.71 16.29C10.32 16.68 9.69 16.68 9.3 16.29L5.71 12.7C5.32 12.31 5.32 11.68 5.71 11.29C6.1 10.9 6.73 10.9 7.12 11.29L10 14.17L16.88 7.29C17.27 6.9 17.9 6.9 18.29 7.29C18.68 7.68 18.68 8.31 18.29 8.7L10.71 16.29Z"/>`;
-const uncheckedIcon = svg`<path fill-rule="evenodd" d="${boxPath}M18 19H6C5.45 19 5 18.55 5 18V6C5 5.45 5.45 5 6 5H18C18.55 5 19 5.45 19 6V18C19 18.55 18.55 19 18 19Z"/>`;
+import { iconStyles } from '../shared/icon-styles.js';
 
 /**
  * Checkbox. Mirrors the Figma "Checkbox" component set.
@@ -68,7 +65,9 @@ export class CcCheckbox extends LitElement {
     this.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
-  static styles = css`
+  static styles = [
+    iconStyles,
+    css`
     :host {
       display: inline-block;
       --_box: var(--cc-unit-4x);
@@ -113,44 +112,44 @@ export class CcCheckbox extends LitElement {
       cursor: inherit;
     }
 
-    svg {
-      width: var(--_icon);
-      height: var(--_icon);
+    .material-icon {
+      position: relative;
       overflow: visible;
-      fill: var(--_color);
+      clip-path: inset(-2px);
+      font-size: var(--_icon);
+      color: var(--_color);
     }
-    input:checked + svg {
+    input:checked + .material-icon {
       --_color: var(--cc-accent-light);
       --_color-hover: var(--cc-accent-dark);
     }
-    label:hover svg {
-      fill: var(--_color-hover);
+    label:hover .material-icon {
+      color: var(--_color-hover);
     }
     label:active .box {
       opacity: 0.7;
     }
 
-    .ring {
-      display: none;
-      fill: none;
-      stroke: var(--cc-border-focus);
-      stroke-width: 2;
-    }
-    input:focus-visible + svg .ring {
-      display: inline;
+    input:focus-visible + .material-icon::after {
+      content: '';
+      position: absolute;
+      inset: calc(1em / 24);
+      border-radius: calc(2.44em / 24);
+      outline: 2px solid var(--cc-border-focus);
     }
 
     :host([disabled]) label {
       cursor: not-allowed;
       opacity: 0.4;
     }
-    :host([disabled]) label:hover svg {
-      fill: var(--_color);
+    :host([disabled]) label:hover .material-icon {
+      color: var(--_color);
     }
     :host([disabled]) label:active .box {
       opacity: 1;
     }
-  `;
+  `,
+  ];
 
   render() {
     return html`<label>
@@ -163,10 +162,7 @@ export class CcCheckbox extends LitElement {
           @input=${this.handleInput}
           @change=${this.handleChange}
         />
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          ${this.checked ? checkedIcon : uncheckedIcon}
-          <rect class="ring" x="0" y="0" width="24" height="24" rx="3.44" vector-effect="non-scaling-stroke" />
-        </svg>
+        <span class="material-icon" aria-hidden="true">${this.checked ? 'check_box' : 'check_box_outline_blank'}</span>
       </span>
       <slot></slot>
     </label>`;

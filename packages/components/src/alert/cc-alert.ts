@@ -1,13 +1,12 @@
-import { LitElement, css, html, svg } from 'lit';
+import { LitElement, css, html } from 'lit';
+import { iconStyles } from '../shared/icon-styles.js';
 
 const icons = {
-  error: svg`<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 13C11.45 13 11 12.55 11 12L11 8C11 7.45 11.45 7 12 7C12.55 7 13 7.45 13 8L13 12C13 12.55 12.55 13 12 13ZM13 17L11 17L11 15L13 15L13 17Z"/>`,
-  warning: svg`<path d="M4.47 20.51L19.53 20.51C21.07 20.51 22.03 18.84 21.26 17.51L13.73 4.5C12.96 3.17 11.04 3.17 10.27 4.5L2.74 17.51C1.97 18.84 2.93 20.51 4.47 20.51ZM12 13.51C11.45 13.51 11 13.06 11 12.51L11 10.51C11 9.96 11.45 9.51 12 9.51C12.55 9.51 13 9.96 13 10.51L13 12.51C13 13.06 12.55 13.51 12 13.51ZM13 17.51L11 17.51L11 15.51L13 15.51L13 17.51Z"/>`,
-  info: svg`<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 17C11.45 17 11 16.55 11 16L11 12C11 11.45 11.45 11 12 11C12.55 11 13 11.45 13 12L13 16C13 16.55 12.55 17 12 17ZM13 9L11 9L11 7L13 7L13 9Z"/>`,
-  success: svg`<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM9.29 16.29L5.7 12.7C5.31 12.31 5.31 11.68 5.7 11.29C6.09 10.9 6.72 10.9 7.11 11.29L10 14.17L16.88 7.29C17.27 6.9 17.9 6.9 18.29 7.29C18.68 7.68 18.68 8.31 18.29 8.7L10.7 16.29C10.32 16.68 9.68 16.68 9.29 16.29Z"/>`,
+  error: 'error',
+  warning: 'warning',
+  info: 'info',
+  success: 'check_circle',
 };
-
-const close = svg`<path d="M15.25 4.76C14.93 4.44 14.4 4.44 14.08 4.76L10 8.83L5.93 4.75C5.6 4.43 5.08 4.43 4.75 4.75C4.43 5.08 4.43 5.6 4.75 5.93L8.83 10L4.75 14.08C4.43 14.4 4.43 14.93 4.75 15.25C5.08 15.58 5.6 15.58 5.93 15.25L10 11.18L14.08 15.25C14.4 15.58 14.93 15.58 15.25 15.25C15.58 14.93 15.58 14.4 15.25 14.08L11.18 10L15.25 5.93C15.57 5.61 15.57 5.08 15.25 4.76Z"/>`;
 
 /**
  * Alert. Mirrors the Figma "Alert" component set.
@@ -59,7 +58,9 @@ export class CcAlert extends LitElement {
       .some((n) => n.nodeType === Node.ELEMENT_NODE || n.textContent?.trim());
   }
 
-  static styles = css`
+  static styles = [
+    iconStyles,
+    css`
     :host {
       display: block;
       --_main: var(--cc-alert-info-main);
@@ -115,10 +116,13 @@ export class CcAlert extends LitElement {
     :host([variant='solid']) .icon {
       color: var(--_contrast);
     }
-    .icon svg,
+    .icon .material-icon {
+      font-size: var(--cc-icon-md);
+    }
     ::slotted([slot='icon']) {
       width: var(--cc-icon-md);
       height: var(--cc-icon-md);
+      font-size: var(--cc-icon-md) !important;
       fill: currentColor;
     }
 
@@ -152,10 +156,8 @@ export class CcAlert extends LitElement {
       display: flex;
       padding: var(--cc-padding-padding-0-5);
     }
-    .close svg {
-      width: var(--cc-icon-sm);
-      height: var(--cc-icon-sm);
-      fill: currentColor;
+    .close .material-icon {
+      font-size: var(--cc-icon-sm);
     }
     ::slotted(button[slot='action']:hover),
     .close:hover {
@@ -173,20 +175,21 @@ export class CcAlert extends LitElement {
       line-height: var(--cc-line-height-body-md);
       font-weight: var(--cc-font-weight-regular);
     }
-  `;
+  `,
+  ];
 
   render() {
     const urgent = this.status === 'error' || this.status === 'warning';
     return html`<div part="base" class="base" role=${urgent ? 'alert' : 'status'}>
       <span class="icon" aria-hidden="true">
-        <slot name="icon"><svg viewBox="0 0 24 24">${icons[this.status] ?? icons.info}</svg></slot>
+        <slot name="icon"><span class="material-icon">${icons[this.status] ?? icons.info}</span></slot>
       </span>
       <div class="title"><slot name="title"></slot></div>
       <div class="actions">
         <slot name="action"></slot>
         ${this.dismissible
           ? html`<button part="close-button" class="close" aria-label=${this.closeLabel} @click=${this.handleClose}>
-              <svg viewBox="0 0 20 20" aria-hidden="true">${close}</svg>
+              <span class="material-icon" aria-hidden="true">close</span>
             </button>`
           : null}
       </div>

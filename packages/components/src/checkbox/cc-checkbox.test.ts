@@ -12,7 +12,10 @@ async function render(markup: string) {
 }
 
 const input = (el: CcCheckbox) => el.shadowRoot!.querySelector('input')!;
-const icon = (el: CcCheckbox) => el.shadowRoot!.querySelector('svg')!;
+const icon = (el: CcCheckbox) => el.shadowRoot!.querySelector('.material-icon')!;
+
+const clickLabelText = (el: CcCheckbox, options = {}) =>
+  userEvent.click(el, { position: { x: el.offsetWidth - 4, y: el.offsetHeight / 2 }, ...options });
 
 const tokenColor = (token: string) => {
   const probe = document.createElement('div');
@@ -45,7 +48,7 @@ describe('cc-checkbox', () => {
 
   it('toggles when the label text is clicked', async () => {
     const el = await render('<cc-checkbox>Remember me</cc-checkbox>');
-    await userEvent.click(page.getByText('Remember me'));
+    await clickLabelText(el);
     expect(el.checked).toBe(true);
   });
 
@@ -76,27 +79,27 @@ describe('cc-checkbox', () => {
   it('does not toggle when disabled', async () => {
     const el = await render('<cc-checkbox disabled>Remember me</cc-checkbox>');
     el.click();
-    await userEvent.click(page.getByText('Remember me'), { force: true });
+    await clickLabelText(el, { force: true });
     await el.updateComplete;
     expect(el.checked).toBe(false);
   });
 
   it('is a checkbox named by its slotted text', async () => {
     await render('<cc-checkbox>Remember me</cc-checkbox>');
-    await expect.element(page.getByRole('checkbox', { name: 'Remember me' })).toBeVisible();
+    await expect.element(page.getByRole('checkbox', { name: 'Remember me', exact: true })).toBeVisible();
   });
 
   it('is named by aria-label when it has no text', async () => {
     await render('<cc-checkbox aria-label="Select row"></cc-checkbox>');
-    await expect.element(page.getByRole('checkbox', { name: 'Select row' })).toBeVisible();
+    await expect.element(page.getByRole('checkbox', { name: 'Select row', exact: true })).toBeVisible();
   });
 
   it('uses the Figma colours', async () => {
     const el = await render('<cc-checkbox>Remember me</cc-checkbox>');
-    expect(getComputedStyle(icon(el)).fill).toBe(tokenColor('--cc-border-medium-contrast'));
+    expect(getComputedStyle(icon(el)).color).toBe(tokenColor('--cc-border-medium-contrast'));
     el.checked = true;
     await el.updateComplete;
-    expect(getComputedStyle(icon(el)).fill).toBe(tokenColor('--cc-accent-light'));
+    expect(getComputedStyle(icon(el)).color).toBe(tokenColor('--cc-accent-light'));
   });
 
   it.each([

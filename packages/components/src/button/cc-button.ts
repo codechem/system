@@ -155,6 +155,7 @@ export class CcButton extends LitElement {
     ::slotted([slot='trailing']) {
       width: var(--_icon);
       height: var(--_icon);
+      font-size: var(--_icon) !important;
       flex: none;
     }
 

@@ -51,6 +51,13 @@ describe('cc-alert', () => {
     expect(el.hidden).toBe(false);
   });
 
+  it('hides icon ligature names from assistive tech', async () => {
+    const el = await render('<cc-alert dismissible>Text</cc-alert>');
+    const icons = [...el.shadowRoot!.querySelectorAll('.material-icon')];
+    expect(icons).toHaveLength(2);
+    for (const icon of icons) expect(icon.closest('[aria-hidden="true"]')).not.toBeNull();
+  });
+
   it('close button has an accessible name', async () => {
     const el = await render('<cc-alert dismissible close-label="Dismiss alert">Text</cc-alert>');
     expect($(el, '.close')!.getAttribute('aria-label')).toBe('Dismiss alert');
