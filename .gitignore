@@ -31,5 +31,5 @@ Thumbs.db
 custom-elements.json
 vscode.html-custom-data.json
 
-.vitest-attachments/
+.vitest/
 storybook-static/

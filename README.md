@@ -20,8 +20,8 @@ This is an npm workspaces monorepo:
 
 ## Prerequisites
 
-- **Node.js 22.12** or newer (developed on Node 24). Vite and Style Dictionary don't run on older versions.
-- **npm 10** or newer (comes with Node)
+- **Node.js 26** (current LTS) is recommended; the version is in `.nvmrc`. The minimum is 22.12, which Vite, Vitest and Style Dictionary need.
+- **npm 10** or newer (comes with Node). npm 12 is recommended; it needs Node 22.22.2+, 24.15+ or 26.
 
 Check with:
 
@@ -36,6 +36,10 @@ npm -v
 git clone https://github.com/codechem/system.git
 cd system
 
+# 0. Switch to the project's Node version from .nvmrc
+mise trust && mise install   # mise: trust mise.toml once; installs Node and npm 12, then switches on cd
+# or: nvm install            # nvm, fnm and others read .nvmrc too
+
 # 1. Install dependencies for every workspace
 npm install
 
@@ -45,6 +49,8 @@ npm run build
 # 3. Download the browser the tests run in (one time)
 npx playwright install chromium
 ```
+
+On npm 12 the install doesn't run dependency install scripts unless they're approved. The three packages that have one (`esbuild`, `fsevents`, `rs-module-lexer`) are denied in `allowScripts` in the root `package.json`, because they work without them.
 
 `npm run build` creates `packages/tokens/dist/tokens.css` and `packages/components/dist`. The `dist` folders are gitignored, so run it again after pulling token changes.
 
