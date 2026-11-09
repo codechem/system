@@ -30,7 +30,7 @@ export default {
 };
 
 export const Text = {};
-export const Count ={ args: { type: 'number', label: '1', color: 'red' } };
+export const Count = { args: { type: 'number', label: '1', color: 'red' } };
 export const Dot = { args: { type: 'dot', label: 'Online', color: 'green' } };
 
 export const AllVariants = {

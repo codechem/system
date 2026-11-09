@@ -20,7 +20,7 @@ This is an npm workspaces monorepo:
 
 ## Prerequisites
 
-- **Node.js 22** or newer (developed on Node 24)
+- **Node.js 22.12** or newer (developed on Node 24). Vite and Style Dictionary don't run on older versions.
 - **npm 10** or newer (comes with Node)
 
 Check with:
@@ -33,8 +33,8 @@ npm -v
 ## Setup
 
 ```sh
-git clone <repo-url>
-cd web_component_library
+git clone https://github.com/codechem/system.git
+cd system
 
 # 1. Install dependencies for every workspace
 npm install
@@ -58,7 +58,7 @@ npm run storybook
 
 This builds the tokens, generates the components' Custom Elements Manifest (which drives the Storybook controls and docs), then opens Storybook at <http://localhost:6006>.
 
-Component changes reload live. Token changes need a restart of the command.
+Component and story changes reload live. Restart the command after changing tokens, or after adding or renaming a property, slot or event, so the Controls and Docs tables pick it up.
 
 ### Tests
 
@@ -94,7 +94,7 @@ Run from the repo root:
 packages/
   tokens/
     src/            Token JSON exported from Figma Variables
-    modes/          Overrides for other modes (e.g. mobile typography)
+    modes/          Other Figma modes (e.g. mobile typography), exported but not built yet
     dist/           Generated tokens.css (gitignored)
   components/
     src/
@@ -122,7 +122,7 @@ Then register it in two places:
 
 ## Updating tokens
 
-Token values come from Figma Variables. To update them, replace the JSON in `packages/tokens/src` (or `modes/`) with the new export, then:
+Token values come from Figma Variables. To update them, replace the JSON in `packages/tokens/src` with the new export, then:
 
 ```sh
 npm run build -w @codechem/tokens
@@ -131,6 +131,8 @@ npm run build -w @codechem/tokens
 Search for a token name in `packages/tokens/dist/tokens.css` to see its final value. VS Code search skips this file because it's gitignored.
 
 ## Using the components in an app
+
+> The packages aren't published to npm yet. Until they are, use them inside this repo or install a local tarball made with `npm pack`.
 
 The components read their styles from the token CSS variables, so an app loads the tokens and the font once, then imports the components:
 
@@ -145,11 +147,11 @@ import '@codechem/components';           // every component
 import '@codechem/components/badge.js';
 ```
 
-This works the same in plain HTML, React, Vue, Angular or any other framework.
+This needs a bundler such as Vite or webpack, which every React, Vue or Angular setup already has. Once imported, the tags work the same in any framework.
 
 ## Editor support (VS Code)
 
-`npm run analyze -w @codechem/components` generates `packages/components/vscode.html-custom-data.json`. To get autocomplete and hover docs for `<cc-*>` tags and their attributes in HTML files, add it to your own VS Code settings:
+`npm run analyze -w @codechem/components` (also part of `npm run build`) generates `packages/components/vscode.html-custom-data.json`. To get autocomplete and hover docs for `<cc-*>` tags and their attributes in HTML files, add it to your workspace `.vscode/settings.json`. That file is gitignored, so it stays on your machine:
 
 ```json
 "html.customData": ["./packages/components/vscode.html-custom-data.json"]

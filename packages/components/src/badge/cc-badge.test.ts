@@ -46,7 +46,12 @@ describe('cc-badge', () => {
     const el = await render('<cc-badge variant="outline">Badge</cc-badge><cc-badge>Badge</cc-badge>');
     const [outline, solid] = document.querySelectorAll('cc-badge');
     expect(size(outline)).toEqual(size(solid));
-    expect(getComputedStyle(el).boxShadow).toContain('inset');
+    const probe = document.createElement('div');
+    probe.style.color = 'var(--cc-status-gray-light)';
+    document.body.append(probe);
+    const light = getComputedStyle(probe).color;
+    expect(getComputedStyle(el).color).toBe(light);
+    expect(getComputedStyle(el).boxShadow).toBe(`${light} 0px 0px 0px 1px inset`);
   });
 
   it.each([
