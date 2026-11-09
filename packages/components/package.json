@@ -1,0 +1,30 @@
+{
+  "name": "@codechem/components",
+  "version": "0.0.0",
+  "description": "CodeChem web components built with Lit",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./button.js": {
+      "types": "./dist/button/cc-button.d.ts",
+      "default": "./dist/button/cc-button.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "lit": "^3.3.3"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6"
+  }
+}

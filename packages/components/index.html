@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>cc components playground</title>
+    <script type="module">
+      import '@codechem/tokens/tokens.css';
+      import './src/index.ts';
+
+      document.querySelectorAll('cc-button').forEach((b) =>
+        b.addEventListener('click', () => console.log('clicked:', b.textContent.trim(), 'disabled =', b.disabled)),
+      );
+    </script>
+  </head>
+  <body style="font-family: system-ui; display: flex; gap: 12px; padding: 24px">
+    <cc-button>Primary</cc-button>
+    <cc-button variant="secondary">Secondary</cc-button>
+    <cc-button disabled>Disabled</cc-button>
+  </body>
+</html>

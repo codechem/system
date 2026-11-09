@@ -1,0 +1,17 @@
+{
+  "name": "@codechem/tokens",
+  "version": "0.0.0",
+  "description": "CodeChem design tokens as CSS custom properties",
+  "exports": {
+    "./tokens.css": "./dist/tokens.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "style-dictionary build --config style-dictionary.config.mjs"
+  },
+  "devDependencies": {
+    "style-dictionary": "^5.8.0"
+  }
+}

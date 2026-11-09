@@ -1,0 +1,11 @@
+{
+  "name": "codechem-design-system",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run build -w @codechem/tokens && npm run dev -w @codechem/components"
+  }
+}
