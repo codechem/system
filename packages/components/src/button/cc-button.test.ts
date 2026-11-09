@@ -43,7 +43,7 @@ describe('cc-button', () => {
   });
 
   describe('in a form', () => {
-    const form = (button: string) => `<form><input name="name" value="Elena" required />${button}</form>`;
+    const form = (button: string) => `<form><input name="name" value="John Doe" required />${button}</form>`;
     const onSubmit = () => {
       const spy = vi.fn((e: Event) => e.preventDefault());
       document.querySelector('form')!.addEventListener('submit', spy);
@@ -84,7 +84,7 @@ describe('cc-button', () => {
       const input = document.querySelector('input')!;
       input.value = 'changed';
       inner(b).click();
-      expect(input.value).toBe('Elena');
+      expect(input.value).toBe('John Doe');
     });
   });
 
