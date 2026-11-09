@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "dev": "npm run build -w @codechem/tokens && npm run dev -w @codechem/components"
+    "dev": "npm run build -w @codechem/tokens && npm run dev -w @codechem/components",
+    "test": "npm run test --workspaces --if-present"
   }
 }

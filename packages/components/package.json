@@ -21,16 +21,20 @@
   ],
   "scripts": {
     "analyze": "cem analyze",
-    "build": "cem analyze && tsc",
-    "dev": "cem analyze && vite"
+    "build": "cem analyze && tsc -p tsconfig.build.json",
+    "dev": "cem analyze && vite",
+    "test": "vitest run"
   },
   "dependencies": {
     "lit": "^3.3.3"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@vitest/browser-playwright": "^4.1.12",
     "custom-element-vs-code-integration": "^1.5.0",
+    "playwright": "^1.65.0",
     "typescript": "^7.0.2",
-    "vite": "^8.3.6"
+    "vite": "^8.3.6",
+    "vitest": "^4.1.12"
   }
 }

@@ -30,3 +30,5 @@ Thumbs.db
 .impeccable
 custom-elements.json
 vscode.html-custom-data.json
+
+.vitest-attachments/
