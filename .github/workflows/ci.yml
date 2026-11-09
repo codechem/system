@@ -43,5 +43,3 @@ jobs:
       - run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version -w @codechem/tokens -w @codechem/components
       - run: npm run build
       - run: npm publish --access public --provenance -w @codechem/tokens -w @codechem/components
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

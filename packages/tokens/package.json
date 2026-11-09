@@ -2,6 +2,11 @@
   "name": "@codechem/tokens",
   "version": "0.0.0",
   "description": "CodeChem design tokens as CSS custom properties",
+  "license": "MIT",
+  "homepage": "https://github.com/codechem/system#readme",
+  "bugs": {
+    "url": "https://github.com/codechem/system/issues"
+  },
   "exports": {
     "./tokens.css": "./dist/tokens.css"
   },
@@ -18,5 +23,8 @@
     "type": "git",
     "url": "git+https://github.com/codechem/system.git",
     "directory": "packages/tokens"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

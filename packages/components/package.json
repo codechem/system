@@ -2,6 +2,11 @@
   "name": "@codechem/components",
   "version": "0.0.0",
   "description": "CodeChem web components built with Lit",
+  "license": "MIT",
+  "homepage": "https://github.com/codechem/system#readme",
+  "bugs": {
+    "url": "https://github.com/codechem/system/issues"
+  },
   "type": "module",
   "exports": {
     ".": {
@@ -54,5 +59,8 @@
     "type": "git",
     "url": "git+https://github.com/codechem/system.git",
     "directory": "packages/components"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
