@@ -13,17 +13,23 @@
       "default": "./dist/button/cc-button.js"
     }
   },
+  "customElements": "custom-elements.json",
   "files": [
-    "dist"
+    "dist",
+    "custom-elements.json",
+    "vscode.html-custom-data.json"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "vite"
+    "analyze": "cem analyze",
+    "build": "cem analyze && tsc",
+    "dev": "cem analyze && vite"
   },
   "dependencies": {
     "lit": "^3.3.3"
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "custom-element-vs-code-integration": "^1.5.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.6"
   }

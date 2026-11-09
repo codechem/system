@@ -26,3 +26,7 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+.impeccable
+custom-elements.json
+vscode.html-custom-data.json
