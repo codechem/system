@@ -69,6 +69,10 @@
       "types": "./dist/accordion/cc-accordion.d.ts",
       "default": "./dist/accordion/cc-accordion.js"
     },
+    "./dialog.js": {
+      "types": "./dist/dialog/cc-dialog.d.ts",
+      "default": "./dist/dialog/cc-dialog.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
