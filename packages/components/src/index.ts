@@ -6,3 +6,4 @@ export { CcLink } from './link/cc-link.js';
 export { CcRadio, CcRadioGroup } from './radio/cc-radio-group.js';
 export { CcTooltip } from './tooltip/cc-tooltip.js';
 export { CcTextarea } from './textarea/cc-textarea.js';
+export { CcListItem } from './list-item/cc-list-item.js';

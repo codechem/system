@@ -1,10 +1,10 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, css, html, nothing } from 'lit';
 import '../shared/load-tokens.js';
 
 /**
  * Button. Mirrors the Figma "Button" component set.
  *
- * @slot - Label text
+ * @slot - Label text, or the icon with `icon-only` (then set `aria-label`)
  * @slot leading - Icon before the label
  * @slot trailing - Icon after the label
  * @csspart button - The inner native button element
@@ -19,16 +19,23 @@ export class CcButton extends LitElement {
     size: { type: String, reflect: true },
     disabled: { type: Boolean, reflect: true },
     type: { type: String, reflect: true },
+    iconOnly: { type: Boolean, attribute: 'icon-only', reflect: true },
+    shape: { type: String, reflect: true },
+    ariaLabel: { attribute: 'aria-label' },
   };
 
   /** @internal */
   private internals = this.attachInternals();
 
-  declare variant: 'filled' | 'outlined' | 'text';
+  /** `accent` is only designed for `icon-only` buttons. */
+  declare variant: 'filled' | 'outlined' | 'text' | 'accent';
   declare color: 'primary' | 'secondary' | 'destructive';
   declare size: 'small' | 'medium' | 'large';
   declare disabled: boolean;
   declare type: 'button' | 'submit' | 'reset';
+  declare iconOnly: boolean;
+  declare shape: 'square' | 'round';
+  declare ariaLabel: string | null;
 
   constructor() {
     super();
@@ -37,6 +44,8 @@ export class CcButton extends LitElement {
     this.size = 'medium';
     this.disabled = false;
     this.type = 'button';
+    this.iconOnly = false;
+    this.shape = 'square';
     this.addEventListener('click', this.handleHostClick);
   }
 
@@ -77,6 +86,14 @@ export class CcButton extends LitElement {
       --_stroke: var(--cc-border-medium-contrast);
       --_tint: color-mix(in srgb, var(--cc-surface-surface-highlight-transparent) 50%, transparent);
     }
+    :host([variant='accent']) {
+      --_bg: var(--cc-surface-surface-2);
+      --_bg-hover: var(--cc-surface-surface-1);
+      --_fg: var(--_tone);
+    }
+    :host([variant='accent'][color='secondary']) {
+      --_fg: var(--cc-text-high-emphasis);
+    }
 
     :host {
       --_py: var(--cc-padding-padding-1);
@@ -98,6 +115,9 @@ export class CcButton extends LitElement {
       --_py: var(--cc-padding-padding-1-5);
       --_px: var(--cc-padding-padding-2-5);
       --_gap: var(--cc-gap-gap-1-5);
+    }
+    :host([icon-only]) {
+      --_px: var(--_py);
     }
 
     button {
@@ -138,6 +158,12 @@ export class CcButton extends LitElement {
     button:active {
       opacity: 0.7;
     }
+    :host([variant='accent']) button:active:not(:disabled) {
+      background: var(--cc-surface-surface-shade);
+    }
+    :host([icon-only][shape='round']) button {
+      border-radius: var(--cc-round);
+    }
     button:focus-visible {
       outline: 2px solid var(--cc-border-focus);
       outline-offset: 4px;
@@ -160,6 +186,13 @@ export class CcButton extends LitElement {
       flex: none;
     }
 
+    :host([icon-only]) ::slotted(:not([slot])) {
+      width: var(--_icon);
+      height: var(--_icon);
+      font-size: var(--_icon) !important;
+      flex: none;
+    }
+
     ::slotted([slot='leading']) {
       margin-inline-start: calc(var(--cc-padding-padding-0-5) * -1);
     }
@@ -169,7 +202,7 @@ export class CcButton extends LitElement {
   `;
 
   render() {
-    return html`<button part="button" ?disabled=${this.disabled}>
+    return html`<button part="button" ?disabled=${this.disabled} aria-label=${this.ariaLabel ?? nothing}>
       <slot name="leading"></slot><slot></slot><slot name="trailing"></slot>
     </button>`;
   }
