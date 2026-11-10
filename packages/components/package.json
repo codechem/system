@@ -53,6 +53,10 @@
       "types": "./dist/chip/cc-chip.d.ts",
       "default": "./dist/chip/cc-chip.js"
     },
+    "./pagination.js": {
+      "types": "./dist/pagination/cc-pagination.d.ts",
+      "default": "./dist/pagination/cc-pagination.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
