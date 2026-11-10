@@ -1,5 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import type { CcRadio } from './cc-radio.js';
+import '../shared/load-tokens.js';
 export { CcRadio } from './cc-radio.js';
 
 /**

@@ -8,13 +8,17 @@
     "url": "https://github.com/codechem/system/issues"
   },
   "exports": {
-    "./tokens.css": "./dist/tokens.css"
+    "./tokens.css": "./dist/tokens.css",
+    "./sheet.js": {
+      "types": "./dist/tokens-sheet.d.ts",
+      "default": "./dist/tokens-sheet.js"
+    }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "style-dictionary build --config style-dictionary.config.mjs"
+    "build": "style-dictionary build --config style-dictionary.config.mjs && node scripts/build-sheet.mjs"
   },
   "devDependencies": {
     "style-dictionary": "^5.8.0"

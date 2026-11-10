@@ -1,5 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { iconStyles } from '../shared/icon-styles.js';
+import '../shared/load-tokens.js';
 
 const icons = {
   error: 'error',

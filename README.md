@@ -52,6 +52,8 @@ npx playwright install chromium
 
 On npm 12 the install doesn't run dependency install scripts unless they're approved. The three packages that have one (`esbuild`, `fsevents`, `rs-module-lexer`) are denied in `allowScripts` in the root `package.json`, because they work without them.
 
+Components load the default tokens themselves: `@codechem/tokens` is a dependency of `@codechem/components`, and importing any component adds the token stylesheet to the page once, inside `@layer cc-tokens`. Your own `:root { --cc-…: … }` or `data-theme` CSS therefore wins without `!important`. Import `@codechem/tokens/tokens.css` only if you want the variables without any component. The fonts (Kumbh Sans, Material Icons Round) are not part of the tokens: load them in your app.
+
 `npm run build` creates `packages/tokens/dist/tokens.css` and `packages/components/dist`. The `dist` folders are gitignored, so run it again after pulling token changes.
 
 ## Run locally

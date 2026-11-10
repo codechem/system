@@ -1,4 +1,5 @@
 import { LitElement, css, html, type PropertyValues } from 'lit';
+import '../shared/load-tokens.js';
 
 let count = 0;
 

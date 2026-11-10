@@ -1,5 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { iconStyles } from '../shared/icon-styles.js';
+import '../shared/load-tokens.js';
 
 /**
  * Radio button. Mirrors the Figma "Radio button" component set. Place it inside `<cc-radio-group>`.

@@ -1,4 +1,5 @@
 import { LitElement, css, html } from 'lit';
+import '../shared/load-tokens.js';
 
 /**
  * Button. Mirrors the Figma "Button" component set.

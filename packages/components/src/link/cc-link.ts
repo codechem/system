@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing } from 'lit';
 import { iconStyles } from '../shared/icon-styles.js';
+import '../shared/load-tokens.js';
 
 /**
  * Link. Mirrors the Figma "Link" component set.

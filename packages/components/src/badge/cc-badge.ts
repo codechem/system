@@ -1,4 +1,5 @@
 import { LitElement, css, html } from 'lit';
+import '../shared/load-tokens.js';
 
 /**
  * Badge. Mirrors the Figma "Badge" component set. Not interactive.

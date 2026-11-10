@@ -1,6 +1,7 @@
 import { LitElement, css, html, nothing } from 'lit';
 import { live } from 'lit/directives/live.js';
 import { iconStyles } from '../shared/icon-styles.js';
+import '../shared/load-tokens.js';
 
 /**
  * Multi-line text field. Mirrors the Figma "Text area" component set.
