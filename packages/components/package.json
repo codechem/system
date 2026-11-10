@@ -29,6 +29,14 @@
       "types": "./dist/checkbox/cc-checkbox.d.ts",
       "default": "./dist/checkbox/cc-checkbox.js"
     },
+    "./link.js": {
+      "types": "./dist/link/cc-link.d.ts",
+      "default": "./dist/link/cc-link.js"
+    },
+    "./radio.js": {
+      "types": "./dist/radio/cc-radio-group.d.ts",
+      "default": "./dist/radio/cc-radio-group.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
