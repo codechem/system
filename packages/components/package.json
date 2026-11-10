@@ -73,6 +73,10 @@
       "types": "./dist/dialog/cc-dialog.d.ts",
       "default": "./dist/dialog/cc-dialog.js"
     },
+    "./text-input.js": {
+      "types": "./dist/text-input/cc-text-input.d.ts",
+      "default": "./dist/text-input/cc-text-input.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
