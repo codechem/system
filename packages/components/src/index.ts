@@ -10,3 +10,4 @@ export { CcListItem } from './list-item/cc-list-item.js';
 export { CcChip } from './chip/cc-chip.js';
 export { CcPagination } from './pagination/cc-pagination.js';
 export { CcSwitch } from './switch/cc-switch.js';
+export { CcTab } from './tab/cc-tab.js';

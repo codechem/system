@@ -61,6 +61,10 @@
       "types": "./dist/switch/cc-switch.d.ts",
       "default": "./dist/switch/cc-switch.js"
     },
+    "./tab.js": {
+      "types": "./dist/tab/cc-tab.d.ts",
+      "default": "./dist/tab/cc-tab.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
