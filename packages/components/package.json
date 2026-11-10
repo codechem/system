@@ -1,11 +1,25 @@
 {
   "name": "@codechem/components",
   "version": "0.0.0",
-  "description": "CodeChem web components built with Lit",
+  "description": "CodeChem design system web components, built with Lit and usable in any framework",
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "lit",
+    "design-system",
+    "ui-components",
+    "codechem"
+  ],
   "license": "MIT",
+  "author": "CodeChem",
   "homepage": "https://github.com/codechem/system#readme",
   "bugs": {
     "url": "https://github.com/codechem/system/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codechem/system.git",
+    "directory": "packages/components"
   },
   "type": "module",
   "exports": {
@@ -81,7 +95,8 @@
       "types": "./dist/number-input-stepper/cc-number-input-stepper.d.ts",
       "default": "./dist/number-input-stepper/cc-number-input-stepper.js"
     },
-    "./custom-elements.json": "./custom-elements.json"
+    "./custom-elements.json": "./custom-elements.json",
+    "./package.json": "./package.json"
   },
   "customElements": "custom-elements.json",
   "files": [
@@ -106,11 +121,6 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.7",
     "vitest": "^5.1.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/codechem/system.git",
-    "directory": "packages/components"
   },
   "publishConfig": {
     "access": "public"
