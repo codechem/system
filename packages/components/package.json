@@ -57,6 +57,10 @@
       "types": "./dist/pagination/cc-pagination.d.ts",
       "default": "./dist/pagination/cc-pagination.js"
     },
+    "./switch.js": {
+      "types": "./dist/switch/cc-switch.d.ts",
+      "default": "./dist/switch/cc-switch.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
