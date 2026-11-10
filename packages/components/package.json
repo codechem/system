@@ -41,6 +41,10 @@
       "types": "./dist/tooltip/cc-tooltip.d.ts",
       "default": "./dist/tooltip/cc-tooltip.js"
     },
+    "./textarea.js": {
+      "types": "./dist/textarea/cc-textarea.d.ts",
+      "default": "./dist/textarea/cc-textarea.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
