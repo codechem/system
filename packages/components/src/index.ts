@@ -9,6 +9,7 @@ export { CcRadio, CcRadioGroup } from './radio/cc-radio-group.js';
 export { CcTooltip } from './tooltip/cc-tooltip.js';
 export { CcTextarea } from './textarea/cc-textarea.js';
 export { CcTextInput } from './text-input/cc-text-input.js';
+export { CcNumberInputStepper } from './number-input-stepper/cc-number-input-stepper.js';
 export { CcListItem } from './list-item/cc-list-item.js';
 export { CcChip } from './chip/cc-chip.js';
 export { CcPagination } from './pagination/cc-pagination.js';
