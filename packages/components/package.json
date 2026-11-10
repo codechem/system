@@ -49,6 +49,10 @@
       "types": "./dist/list-item/cc-list-item.d.ts",
       "default": "./dist/list-item/cc-list-item.js"
     },
+    "./chip.js": {
+      "types": "./dist/chip/cc-chip.d.ts",
+      "default": "./dist/chip/cc-chip.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",

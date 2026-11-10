@@ -15,7 +15,7 @@ This is an npm workspaces monorepo:
 | Path | Package | What it is |
 |---|---|---|
 | `packages/tokens` | `@codechem/tokens` | Figma Variables as JSON, compiled to CSS custom properties (`--cc-*`) with Style Dictionary |
-| `packages/components` | `@codechem/components` | The Lit web components: `<cc-button>`, `<cc-alert>`, `<cc-badge>`, `<cc-checkbox>`, `<cc-link>`, `<cc-radio-group>` with `<cc-radio>`, `<cc-tooltip>`, `<cc-textarea>`, `<cc-list-item>` |
+| `packages/components` | `@codechem/components` | The Lit web components: `<cc-button>`, `<cc-alert>`, `<cc-badge>`, `<cc-checkbox>`, `<cc-link>`, `<cc-radio-group>` with `<cc-radio>`, `<cc-tooltip>`, `<cc-textarea>`, `<cc-list-item>`, `<cc-chip>` |
 | `apps/storybook` | `@codechem/storybook` | Storybook site to browse, try and document the components |
 
 ## Prerequisites
@@ -115,6 +115,7 @@ packages/
       tooltip/
       textarea/
       list-item/
+      chip/
       index.ts      Exports every component
 apps/
   storybook/
