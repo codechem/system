@@ -1,0 +1,59 @@
+name: Deploy Storybook
+
+# Asks Dokploy to rebuild and redeploy the Storybook site after CI passes on
+# main. Dokploy does the build itself; this only calls its deploy webhook.
+#
+# Setup: in Dokploy, turn on Auto Deploy for the app and copy its webhook URL
+# (Deployments tab). In GitHub, add it as the secret DOKPLOY_WEBHOOK_URL,
+# either on the "storybook" environment or on the repository.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: deploy-storybook
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    # Only pushes to main that passed CI. A pull request from a fork's own
+    # "main" branch also reports head_branch main, hence the event check.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    environment: storybook
+    steps:
+      - name: Trigger Dokploy deploy
+        env:
+          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
+          BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+          SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          MESSAGE: ${{ github.event.workflow_run.head_commit.message || 'Manual Storybook deploy' }}
+        run: |
+          if [ -z "$DOKPLOY_WEBHOOK_URL" ]; then
+            echo "::error::DOKPLOY_WEBHOOK_URL is not set. Add it as a secret on the storybook environment or the repository."
+            exit 1
+          fi
+
+          # Dokploy checks a GitHub push payload against the app's branch, and
+          # takes the deployment title and commit from it.
+          payload=$(jq -n --arg ref "refs/heads/$BRANCH" --arg sha "$SHA" --arg message "$MESSAGE" \
+            '{ref: $ref, after: $sha, head_commit: {id: $sha, message: $message}}')
+
+          status=$(curl --silent --show-error --output response.txt --write-out '%{http_code}' \
+            --request POST "$DOKPLOY_WEBHOOK_URL" \
+            --header 'Content-Type: application/json' \
+            --header 'X-GitHub-Event: push' \
+            --data "$payload")
+
+          echo "Dokploy responded $status: $(cat response.txt)"
+          # Dokploy answers 301 or 400 when it skips a deploy (branch mismatch,
+          # auto deploy off), so anything but 200 is a failure here.
+          [ "$status" = 200 ]

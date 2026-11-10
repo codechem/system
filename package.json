@@ -12,7 +12,8 @@
   "scripts": {
     "build": "npm run build -w @codechem/tokens && npm run build -w @codechem/components",
     "test": "npm run test --workspaces --if-present",
-    "storybook": "npm run build -w @codechem/tokens && npm run analyze -w @codechem/components && npm run storybook -w @codechem/storybook"
+    "storybook": "npm run build -w @codechem/tokens && npm run analyze -w @codechem/components && npm run storybook -w @codechem/storybook",
+    "build-storybook": "npm run build -w @codechem/tokens && npm run analyze -w @codechem/components && npm run build-storybook -w @codechem/storybook"
   },
   "allowScripts": {
     "esbuild": false,
