@@ -16,7 +16,9 @@ This is an npm workspaces monorepo:
 |---|---|---|
 | `packages/tokens` | `@codechem/tokens` | Figma Variables as JSON, compiled to CSS custom properties (`--cc-*`) with Style Dictionary |
 | `packages/components` | `@codechem/components` | The Lit web components: `<cc-button>`, `<cc-alert>`, `<cc-badge>`, `<cc-checkbox>`, `<cc-link>`, `<cc-radio-group>` with `<cc-radio>`, `<cc-tooltip>`, `<cc-textarea>`, `<cc-text-input>`, `<cc-number-input-stepper>`, `<cc-list-item>`, `<cc-chip>`, `<cc-pagination>`, `<cc-switch>`, `<cc-tab>`, `<cc-accordion>`, `<cc-dialog>` |
-| `apps/storybook` | `@codechem/storybook` | Storybook site to browse, try and document the components |
+| `apps/storybook` | `@codechem/storybook` | Storybook site to browse, try and document the components, with Getting started, Tokens and Icons pages |
+
+Both packages are published to npm: [`@codechem/components`](https://www.npmjs.com/package/@codechem/components) and [`@codechem/tokens`](https://www.npmjs.com/package/@codechem/tokens). Each has its own README, which is what npm shows.
 
 ## Prerequisites
 
@@ -68,6 +70,8 @@ This builds the tokens, generates the components' Custom Elements Manifest (whic
 
 Component and story changes reload live. Restart the command after changing tokens, or after adding or renaming a property, slot or event, so the Controls and Docs tables pick it up.
 
+The Getting started, Tokens and Icons pages are MDX files in `apps/storybook/src/docs/`. The Tokens page reads the built `tokens.css`, so it updates itself when the tokens change.
+
 ### Tests
 
 ```sh
@@ -94,7 +98,7 @@ Run from the repo root:
 | `npm run storybook` | Starts Storybook on port 6006 |
 | `npm run build -w @codechem/tokens` | Rebuilds only the tokens |
 | `npm run analyze -w @codechem/components` | Regenerates `custom-elements.json` and the VS Code HTML data |
-| `npm run build-storybook -w @codechem/storybook` | Builds a static Storybook into `apps/storybook/storybook-static` |
+| `npm run build-storybook` | Builds the tokens and manifest, then a static Storybook into `apps/storybook/storybook-static` |
 
 ## Project layout
 
@@ -127,6 +131,9 @@ packages/
 apps/
   storybook/
     .storybook/     Storybook config: loads tokens.css, the Kumbh Sans and Material Icons Round fonts and the manifest
+    src/
+      docs/         Getting started, Tokens and Icons pages (MDX)
+      tokens.ts     Reads tokens.css for the Tokens page
 ```
 
 ## Adding a component
@@ -156,9 +163,11 @@ Search for a token name in `packages/tokens/dist/tokens.css` to see its final va
 
 ## Using the components in an app
 
-> The packages aren't published to npm yet. Until they are, use them inside this repo or install a local tarball made with `npm pack`.
+```sh
+npm install @codechem/components
+```
 
-The components read their styles from the token CSS variables and draw their icons with the [Material Icons Round](https://fonts.google.com/icons?icon.set=Material+Icons&icon.style=Rounded) font. An app loads the tokens and both fonts once, then imports the components:
+This also installs `@codechem/tokens`. The components read their styles from the token CSS variables and draw their icons with the [Material Icons Round](https://fonts.google.com/icons?icon.set=Material+Icons&icon.style=Rounded) font. An app loads both fonts once, then imports the components:
 
 ```html
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:YOPQ,wght@40..300,100..900&display=swap" />
@@ -168,13 +177,37 @@ The components read their styles from the token CSS variables and draw their ico
 Without the icon font, icons show up as their names (e.g. "check_box"). The same font gives you every other Material icon for slots, such as a button icon: `<span slot="leading" class="material-icons-round" aria-hidden="true">add</span>`. Keep `aria-hidden` so screen readers don't read the icon name as part of the label.
 
 ```js
-import '@codechem/tokens/tokens.css';
 import '@codechem/components';           // every component
 // or only what you need:
 import '@codechem/components/badge.js';
 ```
 
-This needs a bundler such as Vite or webpack, which every React, Vue or Angular setup already has. Once imported, the tags work the same in any framework.
+Importing a component also loads the tokens. This needs a bundler such as Vite or webpack, which every React, Vue or Angular setup already has. Once imported, the tags work the same in any framework.
+
+## Releasing to npm
+
+Both packages are released together with the same version. Push a version tag:
+
+```sh
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+The `publish` job in `.github/workflows/release.yml` runs after the tests pass. It sets both packages to the tag's version and publishes them with provenance. Use plain release versions only: a prerelease tag such as `v1.0.0-beta.1` would still be published as `latest`. The full setup is in `docs/superpowers/2026-11-09-ci-cd.md`.
+
+## Deploying Storybook
+
+Storybook is hosted on [Dokploy](https://dokploy.com), which builds it with:
+
+```sh
+npm ci && npm run build-storybook   # output: apps/storybook/storybook-static
+```
+
+After CI passes on `main`, `.github/workflows/deploy-storybook.yml` calls Dokploy's deploy webhook. You can also run it by hand from the Actions tab. To set it up:
+
+1. In Dokploy, turn on **Auto Deploy** for the app and copy its **webhook URL** from the Deployments tab.
+2. In GitHub, add it as a secret named `DOKPLOY_WEBHOOK_URL`, either on the `storybook` environment (Settings → Environments) or on the repository.
+
+The workflow fails if the secret is missing or Dokploy doesn't start a deploy, and prints Dokploy's reply, such as "Branch Not Match".
 
 ## Editor support (VS Code)
 
