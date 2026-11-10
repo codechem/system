@@ -1,0 +1,102 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import './docs.css';
+
+<Meta title="Getting started" />
+
+# CodeChem Design System
+
+Web components for CodeChem products, built with [Lit](https://lit.dev) and styled with design tokens exported from the CodeChem Figma library. They are standard custom elements (`<cc-button>`, `<cc-dialog>`, …), so they work in plain HTML and in any framework.
+
+| Package | What it is |
+|---|---|
+| [`@codechem/components`](https://www.npmjs.com/package/@codechem/components) | The `<cc-*>` components |
+| [`@codechem/tokens`](https://www.npmjs.com/package/@codechem/tokens) | Design tokens as CSS custom properties (`--cc-*`). Installed with the components. |
+
+## 1. Install
+
+```sh
+npm install @codechem/components
+```
+
+This also installs `@codechem/tokens` and `lit`.
+
+## 2. Load the fonts
+
+The components use two fonts from Google Fonts that are not bundled with them: **Kumbh Sans** for text and **Material Icons Round** for icons. Add both to your page's `<head>`:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:YOPQ,wght@40..300,100..900&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" />
+```
+
+Without the icon font, icons show up as their names, such as "check_box". More in [Icons](?path=/docs/foundations-icons--docs).
+
+## 3. Import the components
+
+```js
+// Every component
+import '@codechem/components';
+
+// Or only the ones you use
+import '@codechem/components/button.js';
+import '@codechem/components/dialog.js';
+```
+
+Importing a component registers its tag and adds the token stylesheet to the page once. This needs a bundler such as Vite or webpack, which React, Vue and Angular setups already have.
+
+## 4. Use them
+
+```html
+<cc-text-input label="Project name" required></cc-text-input>
+<cc-checkbox checked>Notify the team</cc-checkbox>
+<cc-button variant="filled">Save</cc-button>
+```
+
+Each component's **Docs** page in this Storybook lists its attributes, slots, events and CSS parts. Try them live with the **Controls** panel on any story.
+
+Components send standard DOM events, such as `change` and `input`:
+
+```js
+document.querySelector('cc-checkbox').addEventListener('change', (event) => {
+  console.log(event.target.checked);
+});
+```
+
+## Frameworks
+
+The tags work the same in every framework. A few need to be told that `cc-*` tags are custom elements:
+
+| Framework | Setup |
+|---|---|
+| React 19+ | None. React passes properties and events to custom elements. |
+| Vue | In the Vue compiler options, set `isCustomElement: (tag) => tag.startsWith('cc-')`. |
+| Angular | Add `CUSTOM_ELEMENTS_SCHEMA` to the `schemas` of the components that use them. |
+
+## Theming
+
+All colours, sizes and spacing come from the `--cc-*` [tokens](?path=/docs/foundations-tokens--docs). The components load them inside `@layer cc-tokens`, so your own CSS overrides them without `!important`:
+
+```css
+:root {
+  --cc-accent-main: #7753cd;
+  --cc-radius: 8px;
+}
+```
+
+Use the same tokens in your own CSS so your app matches the components. To get the variables without any component, import `@codechem/tokens/tokens.css`.
+
+## Editor support
+
+`@codechem/components` ships a Custom Elements Manifest (`custom-elements.json`) and VS Code HTML data. For autocomplete and hover docs on `<cc-*>` tags in VS Code, add this to `.vscode/settings.json`:
+
+```json
+{
+  "html.customData": ["./node_modules/@codechem/components/vscode.html-custom-data.json"]
+}
+```
+
+## Contributing
+
+The source, setup and contribution guide are in the [GitHub repository](https://github.com/codechem/system).

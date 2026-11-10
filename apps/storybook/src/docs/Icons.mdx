@@ -1,0 +1,145 @@
+import { Meta, IconGallery, IconItem } from '@storybook/addon-docs/blocks';
+import './docs.css';
+
+<Meta title="Foundations/Icons" />
+
+export const Icon = ({ name, size }) => (
+  <span className="material-icons-round" aria-hidden="true" style={size ? { fontSize: size } : undefined}>
+    {name}
+  </span>
+);
+
+export const builtIn = [
+  ['check_box', '<cc-checkbox>, <cc-list-item>'],
+  ['check_box_outline_blank', '<cc-checkbox>, <cc-list-item>'],
+  ['radio_button_checked', '<cc-radio>'],
+  ['radio_button_unchecked', '<cc-radio>'],
+  ['check', '<cc-chip> (selected filter chip)'],
+  ['close', '<cc-alert>, <cc-chip>, <cc-list-item>'],
+  ['error', '<cc-alert status="error">'],
+  ['warning', '<cc-alert status="warning">'],
+  ['info', '<cc-alert status="info">, <cc-text-input>, <cc-textarea>'],
+  ['check_circle', '<cc-alert status="success">'],
+  ['expand_more', '<cc-accordion>'],
+  ['chevron_left', '<cc-pagination>'],
+  ['chevron_right', '<cc-pagination>, <cc-text-input>'],
+  ['arrow_drop_up', '<cc-number-input-stepper>'],
+  ['arrow_drop_down', '<cc-number-input-stepper>'],
+  ['link', '<cc-link>'],
+  ['person_2', '<cc-list-item> (default icon)'],
+];
+
+export const common = [
+  'add', 'remove', 'edit', 'delete', 'content_copy', 'search', 'filter_list', 'sort',
+  'settings', 'more_vert', 'more_horiz', 'menu', 'home', 'person', 'group', 'mail',
+  'notifications', 'calendar_today', 'schedule', 'visibility', 'visibility_off', 'lock', 'download', 'upload',
+  'attach_file', 'open_in_new', 'refresh', 'arrow_back', 'arrow_forward', 'expand_less', 'star', 'favorite',
+];
+
+# Icons
+
+The components draw their icons with Google's **[Material Icons Round](https://fonts.google.com/icons?icon.set=Material+Icons&icon.style=Rounded)** font: the classic Material Icons set, Round style. It is the same set and style as the icons in Figma.
+
+## Load the font
+
+The font is not bundled with the components. Load it once in your app, next to Kumbh Sans:
+
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" />
+```
+
+Without it, each icon shows the start of its name as text, such as "ch" for `check_box`. To self-host instead of using Google Fonts, the [`material-icons`](https://www.npmjs.com/package/material-icons) npm package ships the same font files.
+
+## Put an icon in a component
+
+Icons go into a component's icon slot as a `<span>` with the `material-icons-round` class. The text inside is the icon's name, which the font draws as the icon:
+
+```html
+<cc-button>
+  <span slot="leading" class="material-icons-round" aria-hidden="true">add</span>
+  New project
+</cc-button>
+
+<cc-text-input label="Search">
+  <span slot="leading" class="material-icons-round" aria-hidden="true">search</span>
+</cc-text-input>
+
+<cc-button icon-only aria-label="Delete">
+  <span class="material-icons-round" aria-hidden="true">delete</span>
+</cc-button>
+```
+
+| Component | Icon slots |
+|---|---|
+| `<cc-button>` | `leading`, `trailing`, or the default slot with `icon-only` |
+| `<cc-chip>` | `leading`, `trailing` |
+| `<cc-text-input>`, `<cc-number-input-stepper>` | `leading` |
+| `<cc-alert>` | `icon` (replaces the status icon) |
+| `<cc-list-item>` | none: set the `icon` attribute to an icon name, e.g. `icon="folder"` |
+
+Things to keep in mind:
+
+- **Keep `aria-hidden="true"`** on the icon. Otherwise screen readers read the icon name ("add") as part of the label.
+- **An icon-only button needs `aria-label`**, since it has no visible text to name it.
+- **The component sets the icon size.** Slotted font icons follow the component's size and can't be resized from outside. If you need a different size, slot an SVG with its own `width` and `height`.
+- **Colour follows the text.** A font icon is text, so it takes the colour the component gives its content.
+
+## Find an icon
+
+Browse the [Material Icons Round set on Google Fonts](https://fonts.google.com/icons?icon.set=Material+Icons&icon.style=Rounded) and use the name shown under an icon, in `snake_case` (e.g. `content_copy`).
+
+Use **Material Icons**, not **Material Symbols**. Symbols is a newer font whose glyphs differ slightly from the Figma icons, and some names differ.
+
+### Common icons
+
+<div className="cc-docs-dark">
+  <IconGallery>
+    {common.map((name) => (
+      <IconItem key={name} name={name}>
+        <Icon name={name} />
+      </IconItem>
+    ))}
+  </IconGallery>
+</div>
+
+### Icons the components use
+
+These are drawn by the components themselves. You don't need to slot them.
+
+<div className="cc-docs-dark">
+  <table className="cc-docs-table">
+    <tbody>
+      {builtIn.map(([name, where]) => (
+        <tr key={name}>
+          <td style={{ width: 40 }}>
+            <Icon name={name} size={24} />
+          </td>
+          <td>
+            <code>{name}</code>
+          </td>
+          <td>{where}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+## Sizes
+
+Icon size tokens, for icons you place yourself outside a component's slot:
+
+<div className="cc-docs-dark cc-docs-icon-row">
+  {['xs', 'sm', 'md', 'lg', 'xl'].map((size) => (
+    <figure key={size}>
+      <Icon name="star" size={`var(--cc-icon-${size})`} />
+      <figcaption>--cc-icon-{size}</figcaption>
+    </figure>
+  ))}
+</div>
+
+## Icons that aren't in the font
+
+Ten icons in the Figma library don't come from Material Icons, so the font can't draw them. Use an SVG for these:
+
+- **Brand logos** (from Material Design Icons and Bootstrap Icons): web, LinkedIn, GitHub, Facebook, Instagram, X (Twitter), Google.
+- **Custom-drawn:** sidebar collapse, sidebar expand, minimize / hide sidebar.

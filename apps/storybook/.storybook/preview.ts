@@ -9,6 +9,9 @@ const preview: Preview = {
   parameters: {
     backgrounds: { disable: true },
     controls: { expanded: true },
+    options: {
+      storySort: { order: ['Getting started', 'Foundations', ['Tokens', 'Icons'], 'Components'] },
+    },
   },
 };
 

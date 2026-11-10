@@ -1,0 +1,216 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/addon-docs/blocks';
+import {
+  semanticColors,
+  alertColors,
+  statusColors,
+  paletteColors,
+  textStyles,
+  extraLineHeights,
+  group,
+  spacing,
+} from '../tokens';
+import './docs.css';
+
+<Meta title="Foundations/Tokens" />
+
+# Tokens
+
+Every colour, size and spacing value in the components comes from a design token. Tokens are CSS custom properties named `--cc-*`, published as [`@codechem/tokens`](https://www.npmjs.com/package/@codechem/tokens) and exported from the Figma Variables. This page reads the built `tokens.css`, so it always shows the current values.
+
+Use them in your own CSS so your app matches the components:
+
+```css
+.card {
+  background: var(--cc-surface-surface-1);
+  color: var(--cc-text-high-emphasis);
+  padding: var(--cc-padding-padding-3);
+  border-radius: var(--cc-radius);
+}
+```
+
+Reach for the **semantic** tokens (surface, text, border, accent, …) first. They say what a colour is for, so a theme can change them in one place. The **palette** tokens are the raw colours the semantic ones point at.
+
+To change a token, set it in your own CSS. The components load the tokens inside `@layer cc-tokens`, so a plain rule wins without `!important`:
+
+```css
+:root {
+  --cc-accent-main: #7753cd;
+}
+```
+
+## Colours
+
+### Semantic
+
+<ColorPalette>
+  {semanticColors.map((g) => (
+    <ColorItem key={g.title} title={g.title} subtitle={g.subtitle} colors={g.colors} />
+  ))}
+</ColorPalette>
+
+### Alert
+
+Used by `<cc-alert>`, one set per status.
+
+<ColorPalette>
+  {alertColors.map((g) => (
+    <ColorItem key={g.title} title={g.title} subtitle={g.subtitle} colors={g.colors} />
+  ))}
+</ColorPalette>
+
+### Status
+
+Coloured labels such as `<cc-badge color="…">`, one set per hue.
+
+<ColorPalette>
+  {statusColors.map((g) => (
+    <ColorItem key={g.title} title={g.title} subtitle={g.subtitle} colors={g.colors} />
+  ))}
+</ColorPalette>
+
+### Palette
+
+<ColorPalette>
+  {paletteColors.map((g) => (
+    <ColorItem key={g.title} title={g.title} subtitle={g.subtitle} colors={g.colors} />
+  ))}
+</ColorPalette>
+
+## Typography
+
+The typeface is **Kumbh Sans** (`--cc-typeface-typeface`). Load it from Google Fonts in your app; see [Getting started](?path=/docs/getting-started--docs).
+
+### Text styles
+
+Each style pairs a `--cc-text-size-*` with the `--cc-line-height-*` of the same name.
+
+<table className="cc-docs-table">
+  <thead>
+    <tr>
+      <th>Style</th>
+      <th>Sample</th>
+      <th>Size / line height</th>
+      <th>Tokens</th>
+    </tr>
+  </thead>
+  <tbody>
+    {textStyles.map((s) => (
+      <tr key={s.name}>
+        <td>{s.name}</td>
+        <td>
+          <div
+            className="cc-docs-sample"
+            style={{ fontSize: `var(${s.size.name})`, lineHeight: s.lineHeight ? `var(${s.lineHeight.name})` : undefined }}
+          >
+            Ag Kumbh Sans
+          </div>
+        </td>
+        <td>
+          {s.size.resolved} / {s.lineHeight?.resolved ?? '—'}
+        </td>
+        <td>
+          <code>{s.size.name}</code>
+          <br />
+          {s.lineHeight ? <code>{s.lineHeight.name}</code> : null}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+<div>
+  Line heights without a size of their own:{' '}
+  {extraLineHeights.map((t, i) => (
+    <span key={t.name}>
+      {i > 0 ? ', ' : ''}
+      <code>{t.name}</code> ({t.resolved})
+    </span>
+  ))}
+  .
+</div>
+
+### Font weights
+
+<table className="cc-docs-table">
+  <tbody>
+    {group('font-weight').map((t) => (
+      <tr key={t.name}>
+        <td>
+          <code>{t.name}</code>
+        </td>
+        <td>{t.resolved}</td>
+        <td>
+          <span className="cc-docs-sample" style={{ fontSize: 20, fontWeight: `var(${t.name})` }}>
+            Ag Kumbh Sans
+          </span>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+## Spacing
+
+Padding, gap and margin share one scale built on an 8px unit (`--cc-unit-*`). The step in the name is a multiple of 8px: `--cc-gap-gap-1-5` is 1.5 × 8 = 12px.
+
+<table className="cc-docs-table">
+  <thead>
+    <tr>
+      <th>Step</th>
+      <th>Value</th>
+      <th style={{ width: '30%' }}></th>
+      <th>Padding</th>
+      <th>Gap</th>
+      <th>Margin</th>
+    </tr>
+  </thead>
+  <tbody>
+    {spacing.map((s) => (
+      <tr key={s.step}>
+        <td>{s.step}</td>
+        <td>{s.value}</td>
+        <td>
+          <div className="cc-docs-bar" style={{ width: s.value }} />
+        </td>
+        <td>{s.padding ? <code>{s.padding}</code> : '—'}</td>
+        <td>{s.gap ? <code>{s.gap}</code> : '—'}</td>
+        <td>{s.margin ? <code>{s.margin}</code> : '—'}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+## Radius
+
+<table className="cc-docs-table">
+  <tbody>
+    {[...group('radius'), ...group('round')].map((t) => (
+      <tr key={t.name}>
+        <td>
+          <div className="cc-docs-radius" style={{ borderRadius: `var(${t.name})` }} />
+        </td>
+        <td>
+          <code>{t.name}</code>
+        </td>
+        <td>{t.resolved}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+## Icon sizes
+
+For icons drawn with the Material Icons Round font, set as `font-size`. See [Icons](?path=/docs/foundations-icons--docs).
+
+<div className="cc-docs-dark cc-docs-icon-row">
+  {group('icon').map((t) => (
+    <figure key={t.name}>
+      <span className="material-icons-round" aria-hidden="true" style={{ fontSize: `var(${t.name})` }}>
+        star
+      </span>
+      <figcaption>
+        {t.name} · {t.resolved}
+      </figcaption>
+    </figure>
+  ))}
+</div>

@@ -1,0 +1,65 @@
+/* Shared styles for the MDX docs pages (Getting started, Tokens, Icons). */
+
+.cc-docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.cc-docs-table th,
+.cc-docs-table td {
+  padding: 8px 12px 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: left;
+  vertical-align: middle;
+}
+.cc-docs-table th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cc-docs-table code {
+  white-space: nowrap;
+}
+
+.cc-docs-sample {
+  font-family: var(--cc-typeface-typeface);
+  white-space: nowrap;
+}
+
+.cc-docs-bar {
+  height: 12px;
+  border-radius: 2px;
+  background: var(--cc-accent-main);
+}
+
+.cc-docs-radius {
+  width: 96px;
+  height: 64px;
+  background: var(--cc-surface-surface-2);
+  border: 1px solid var(--cc-border-medium-contrast);
+}
+
+/* Icons are shown on the components' own dark background. */
+.cc-docs-dark {
+  background: var(--cc-background);
+  color: var(--cc-text-high-emphasis);
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.cc-docs-icon-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 32px;
+}
+.cc-docs-icon-row figure {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.cc-docs-icon-row figcaption {
+  font-family: ui-monospace, Menlo, monospace;
+  color: var(--cc-text-medium-emphasis);
+}
