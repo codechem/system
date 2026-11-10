@@ -15,7 +15,7 @@ This is an npm workspaces monorepo:
 | Path | Package | What it is |
 |---|---|---|
 | `packages/tokens` | `@codechem/tokens` | Figma Variables as JSON, compiled to CSS custom properties (`--cc-*`) with Style Dictionary |
-| `packages/components` | `@codechem/components` | The Lit web components: `<cc-button>`, `<cc-alert>`, `<cc-badge>`, `<cc-checkbox>` |
+| `packages/components` | `@codechem/components` | The Lit web components: `<cc-button>`, `<cc-alert>`, `<cc-badge>`, `<cc-checkbox>`, `<cc-link>`, `<cc-radio-group>` with `<cc-radio>`, `<cc-tooltip>` |
 | `apps/storybook` | `@codechem/storybook` | Storybook site to browse, try and document the components |
 
 ## Prerequisites
@@ -108,6 +108,9 @@ packages/
       alert/
       badge/
       checkbox/
+      link/
+      radio/        cc-radio-group.ts and cc-radio.ts
+      tooltip/
       index.ts      Exports every component
 apps/
   storybook/
@@ -116,7 +119,9 @@ apps/
 
 ## Adding a component
 
-Each component lives in its own folder under `packages/components/src/<name>/` with three files:
+With Claude Code, run `/create-cc-component <figma-url>`. It reads the component set from Figma, then writes the component, stories and tests. It registers the component, verifies it, and writes a reviewed write-up in `docs/superpowers/`. It never commits. The steps it follows are in `.claude/skills/create-cc-component/SKILL.md`.
+
+To do it by hand: each component lives in its own folder under `packages/components/src/<name>/` with three files:
 
 1. `cc-<name>.ts`: the Lit element. Use the `--cc-*` tokens for every colour, spacing and font value.
 2. `cc-<name>.stories.ts`: picked up by Storybook automatically.

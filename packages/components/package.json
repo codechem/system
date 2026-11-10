@@ -37,6 +37,10 @@
       "types": "./dist/radio/cc-radio-group.d.ts",
       "default": "./dist/radio/cc-radio-group.js"
     },
+    "./tooltip.js": {
+      "types": "./dist/tooltip/cc-tooltip.d.ts",
+      "default": "./dist/tooltip/cc-tooltip.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",

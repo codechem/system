@@ -4,3 +4,4 @@ export { CcBadge } from './badge/cc-badge.js';
 export { CcCheckbox } from './checkbox/cc-checkbox.js';
 export { CcLink } from './link/cc-link.js';
 export { CcRadio, CcRadioGroup } from './radio/cc-radio-group.js';
+export { CcTooltip } from './tooltip/cc-tooltip.js';
