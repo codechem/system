@@ -65,6 +65,10 @@
       "types": "./dist/tab/cc-tab.d.ts",
       "default": "./dist/tab/cc-tab.js"
     },
+    "./accordion.js": {
+      "types": "./dist/accordion/cc-accordion.d.ts",
+      "default": "./dist/accordion/cc-accordion.js"
+    },
     "./custom-elements.json": "./custom-elements.json"
   },
   "customElements": "custom-elements.json",
