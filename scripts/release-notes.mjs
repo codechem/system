@@ -6,8 +6,12 @@ import { pathToFileURL } from 'node:url';
 const stableTag = /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 const categories = ['Breaking changes', 'Features', 'Fixes', 'Documentation', 'Maintenance', 'Other changes'];
 
+export function isStableReleaseTag(tag) {
+  return typeof tag === 'string' && stableTag.test(tag) && !/[\r\n]/.test(tag);
+}
+
 export function validateReleaseInput(tag, repository) {
-  if (!stableTag.test(tag ?? '')) throw new Error('Expected a stable version tag: vMAJOR.MINOR.PATCH');
+  if (!isStableReleaseTag(tag)) throw new Error('Expected a stable version tag: vMAJOR.MINOR.PATCH');
   if (!/^[A-Za-z0-9][A-Za-z0-9-]*\/[A-Za-z0-9_.-]+$/.test(repository ?? '') || repository.split('/')[1] === '..') {
     throw new Error('Expected a GitHub repository: owner/repo');
   }
@@ -23,11 +27,27 @@ export function generateNotes({ cwd, tag, repository }) {
   validateReleaseInput(tag, repository);
   const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: 'pipe', maxBuffer: 32 * 1024 * 1024 }).trimEnd();
   const target = git('rev-parse', '--verify', `refs/tags/${tag}^{commit}`);
+  const parents = new Map(git('rev-list', '--parents', target).split('\n').map((line) => {
+    const [sha, ...ancestors] = line.split(' ');
+    return [sha, ancestors];
+  }));
+  // Breadth-first traversal measures parent edges, not commits unique to a branch.
+  const distances = new Map([[target, 0]]);
+  const queue = [target];
+  for (let index = 0; index < queue.length; index++) {
+    const sha = queue[index];
+    for (const parent of parents.get(sha) ?? []) {
+      if (!distances.has(parent)) {
+        distances.set(parent, distances.get(sha) + 1);
+        queue.push(parent);
+      }
+    }
+  }
   const candidates = [];
-  for (const name of git('tag', '--merged', target).split('\n').filter((name) => stableTag.test(name))) {
+  for (const name of git('tag', '--merged', target).split('\n').filter(isStableReleaseTag)) {
     const sha = git('rev-parse', '--verify', `refs/tags/${name}^{commit}`);
     if (sha === target) continue;
-    candidates.push({ name, distance: Number(git('rev-list', '--count', `${sha}..${target}`)) });
+    candidates.push({ name, distance: distances.get(sha) });
   }
   candidates.sort((a, b) => a.distance - b.distance || a.name.localeCompare(b.name, 'en'));
   const previous = candidates[0]?.name;
@@ -46,7 +66,11 @@ export function generateNotes({ cwd, tag, repository }) {
     const category = breaking || /^BREAKING[ -]CHANGE:\s*/m.test(body) ? 'Breaking changes'
       : type === 'feat' ? 'Features' : type === 'fix' ? 'Fixes' : type === 'docs' ? 'Documentation'
         : /^(build|ci|chore|refactor|perf|style|test)$/.test(type) ? 'Maintenance' : 'Other changes';
-    const title = escapeMarkdown(description ?? subject).replace(/#(\d+)\b/g, `[$&](${url}/pull/$1)`);
+    const title = escapeMarkdown(description ?? subject).replace(/\\\(#(\d+)\\\)$|\bpull request #(\d+)\b/gi, (match, squash, merge) => {
+      const number = squash ?? merge;
+      const link = `[#${number}](${url}/pull/${number})`;
+      return squash ? `\\(${link}\\)` : match.replace(`#${number}`, link);
+    });
     const prefix = scope ? `**${escapeMarkdown(scope)}:** ` : '';
     let entry = `- ${prefix}${title} ([${sha.slice(0, 7)}](${url}/commit/${sha}))`;
     if (body.trim()) entry += `\n\n${body.trim().split('\n').map((line) => `  > ${escapeMarkdown(line)}`).join('\n')}`;

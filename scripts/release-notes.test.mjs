@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, readFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -138,4 +138,46 @@ test('CLI writes notes to the requested output and fails for missing arguments',
   assert.equal(result.status, 0, result.stderr.toString());
   assert.match(readFileSync(output, 'utf8'), /CLI works/);
   assert.notEqual(spawnSync(process.execPath, [script], { cwd }).status, 0);
+});
+
+test('release tag gate skips prereleases and malformed tags without failing publication', (t) => {
+  const { cwd } = fixture(t);
+  const script = new URL('./check-release-tag.mjs', import.meta.url).pathname;
+  const output = join(cwd, 'outputs');
+  for (const [tag, expected] of [['v1.2.3', 'true'], ['v0.0.0', 'true'], ['v1.2.3-beta.1', 'false'], ['v1.2.3+build', 'false'], ['v01.2.3', 'false'], ['v1.2.3\n', 'false']]) {
+    writeFileSync(output, '');
+    const result = spawnSync(process.execPath, [script], { env: { ...process.env, RELEASE_TAG: tag, GITHUB_OUTPUT: output }, encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(readFileSync(output, 'utf8'), `stable=${expected}\n`);
+  }
+});
+
+test('nearest baseline follows shortest parent path in merged history', (t) => {
+  const { git, commit, notes } = fixture(t);
+  commit('root');
+  git('checkout', '-q', '-b', 'side');
+  commit('side baseline');
+  git('tag', 'v1.0.0');
+  commit('side second');
+  commit('side third');
+  git('checkout', '-q', 'main');
+  commit('main baseline');
+  git('tag', 'v1.0.1');
+  git('merge', '--no-ff', '-m', 'merge side', 'side');
+  git('tag', 'v1.1.0');
+  const result = notes();
+  assert.ok(result.includes('/compare/v1.0.1...v1.1.0'));
+  assert.ok(result.includes('side baseline'));
+  assert.ok(!result.includes('- main baseline'));
+});
+
+test('links recognizable PR references without converting issues or code numbers into PRs', (t) => {
+  const { git, commit, notes } = fixture(t);
+  commit('fix: resolve issue #123 and color #456');
+  commit('Merge pull request #789 from example/branch');
+  git('tag', 'v1.1.0');
+  const result = notes();
+  assert.ok(!result.includes('/pull/123'));
+  assert.ok(!result.includes('/pull/456'));
+  assert.ok(result.includes('[#789](https://github.com/codechem/system/pull/789)'));
 });

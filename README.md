@@ -213,7 +213,7 @@ BREAKING CHANGE: Replace --cc-old-primary with --cc-primary.
 - A `!` marker or `BREAKING CHANGE:` / `BREAKING-CHANGE:` footer → **Breaking changes**.
 - Other subjects → **Other changes**. Empty sections are omitted.
 
-Each entry links to its commit and includes any commit-body details. PR references in subjects link to their PRs. Notes include a commit count, unique Git author names as contributor credits (not guessed GitHub usernames), and a comparison link, or a history link for the first release. Upgrade instructions must be supplied in commit messages; the generator does not invent them.
+Each entry links to its commit and includes any commit-body details. Recognizable PR references in subjects (a trailing `(#123)` or `Merge pull request #123`) link to their PRs; other numeric references are left as text. Notes include a commit count, unique Git author names as contributor credits (not guessed GitHub usernames), and a comparison link, or a history link for the first release. Upgrade instructions must be supplied in commit messages; the generator does not invent them. Non-stable tags skip GitHub Release creation without changing the existing npm publication behavior.
 
 Existing GitHub Releases are **left unchanged** on reruns, preserving manual edits. If npm publishing succeeds but release creation fails, use **Re-run failed jobs** in Actions to retry the release job without publishing the npm packages again. No historical releases are automatically backfilled.
 

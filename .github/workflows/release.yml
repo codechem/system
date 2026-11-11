@@ -58,7 +58,13 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
+      - name: Check stable release tag
+        id: version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: node scripts/check-release-tag.mjs
       - name: Generate commit-based release notes
+        if: steps.version.outputs.stable == 'true'
         env:
           RELEASE_TAG: ${{ github.ref_name }}
           RELEASE_REPOSITORY: ${{ github.repository }}
@@ -68,6 +74,7 @@ jobs:
           --repository "$RELEASE_REPOSITORY"
           --output "$RUNNER_TEMP/release-notes.md"
       - name: Create GitHub Release unless it already exists
+        if: steps.version.outputs.stable == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
