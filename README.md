@@ -191,6 +191,38 @@ git tag v0.1.0 && git push origin v0.1.0
 
 The `publish` job in `.github/workflows/release.yml` runs after the tests pass. It sets both packages to the tag's version and publishes them with provenance. Use plain release versions only: a prerelease tag such as `v1.0.0-beta.1` would still be published as `latest`. The full setup is in `docs/superpowers/2026-11-09-ci-cd.md`.
 
+### Automatic GitHub release notes
+
+After **both npm packages publish successfully**, the `release` job creates a GitHub Release for the stable `vMAJOR.MINOR.PATCH` tag. It uses the workflow's built-in `GITHUB_TOKEN` (passed to GitHub CLI as `GH_TOKEN`), so no additional secret is needed.
+
+Notes cover **all commits**, including direct commits to `main`, since the nearest preceding stable version tag reachable in that release's Git history. Tags on unrelated branches, prerelease tags, unprefixed tags, and aliases at the release commit are not used as baselines. The first release includes all reachable history.
+
+Use descriptive conventional commit messages to make the notes useful:
+
+```text
+feat(button): add a compact size (#123)
+fix(dialog): restore focus when dismissed
+docs: explain theme overrides
+feat(tokens)!: rename the primary color tokens
+
+BREAKING CHANGE: Replace --cc-old-primary with --cc-primary.
+```
+
+- `feat:` → **Features**; `fix:` → **Fixes**; `docs:` → **Documentation**.
+- `build:`, `ci:`, `chore:`, `refactor:`, `perf:`, `style:`, and `test:` → **Maintenance**.
+- A `!` marker or `BREAKING CHANGE:` / `BREAKING-CHANGE:` footer → **Breaking changes**.
+- Other subjects → **Other changes**. Empty sections are omitted.
+
+Each entry links to its commit and includes any commit-body details. PR references in subjects link to their PRs. Notes include a commit count, unique Git author names as contributor credits (not guessed GitHub usernames), and a comparison link, or a history link for the first release. Upgrade instructions must be supplied in commit messages; the generator does not invent them.
+
+Existing GitHub Releases are **left unchanged** on reruns, preserving manual edits. If npm publishing succeeds but release creation fails, use **Re-run failed jobs** in Actions to retry the release job without publishing the npm packages again. No historical releases are automatically backfilled.
+
+Test the automation without publishing anything:
+
+```sh
+node --test scripts/*.test.mjs
+```
+
 ## Deploying Storybook
 
 Storybook is hosted on [Dokploy](https://dokploy.com), which builds it with:
