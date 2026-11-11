@@ -8,8 +8,8 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@codechem/components": "0.0.4",
-    "@codechem/tokens": "0.0.4",
+    "@codechem/components": "0.0.5",
+    "@codechem/tokens": "0.0.5",
     "astro": "^7.4.10"
   }
 }

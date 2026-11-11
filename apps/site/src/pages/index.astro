@@ -37,6 +37,16 @@ export class SettingsComponent {}`,
 };
 const frameworks = Object.keys(snippets);
 
+const tokensSnippet = `/* main.js: import '@codechem/tokens/tokens.css'; */
+.card {
+  background: var(--cc-surface-surface-1);
+  color: var(--cc-text-high-emphasis);
+  padding: var(--cc-padding-padding-3);
+  border: 1px solid var(--cc-border-medium-contrast);
+  border-radius: var(--cc-radius);
+  font-family: var(--cc-typeface-typeface);
+}`;
+
 const team = [
   { initials: 'JD', name: 'John Doe', email: 'john.doe@acme.dev', role: 'Owner', color: 'green' },
   { initials: 'JS', name: 'Jane Smith', email: 'jane.smith@acme.dev', role: 'Editor', color: 'blue' },
@@ -264,6 +274,29 @@ const roles = [
             <cc-checkbox checked>Pin</cc-checkbox>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="split" aria-labelledby="tokens-title">
+      <div class="split-copy">
+        <h2 id="tokens-title">Tokens, without the components.</h2>
+        <p><code>@codechem/tokens</code> is the same Figma palette, type scale, spacing and radius as plain CSS custom properties. The components load it for you; install it on its own to style anything else.</p>
+        <ul class="facts">
+          <li><strong>One stylesheet.</strong> Import <code>tokens.css</code> and every <code>--cc-*</code> variable is on <code>:root</code>.</li>
+          <li><strong>Semantic first.</strong> Surface, text, border and accent tokens switch with the theme. The raw palette is there when you need it.</li>
+          <li><strong>Layered.</strong> The constructable sheet sits in <code>@layer cc-tokens</code>, so your overrides win.</li>
+        </ul>
+        <button class="install" type="button" data-copy="npm i @codechem/tokens" aria-label="Copy install command">
+          <span class="prompt" aria-hidden="true">$</span><code>npm i @codechem/tokens</code>
+          <span class="material-icons-round" aria-hidden="true">content_copy</span>
+        </button>
+        <a class="arrow-link" href="https://www.npmjs.com/package/@codechem/tokens" rel="noopener">Read the tokens docs</a>
+      </div>
+      <div class="code code-dark">
+        <button class="copy" type="button" data-copy={tokensSnippet} aria-label="Copy code">
+          <span class="material-icons-round" aria-hidden="true">content_copy</span>
+        </button>
+        <pre><code>{tokensSnippet}</code></pre>
       </div>
     </section>
 
@@ -599,6 +632,10 @@ const roles = [
   .facts strong {
     color: var(--ink);
     font-weight: 650;
+  }
+  .split-copy > .install,
+  .split-copy > .arrow-link {
+    justify-self: start;
   }
   .split .code-dark pre {
     min-height: 15rem;
