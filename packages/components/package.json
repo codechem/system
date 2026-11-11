@@ -95,6 +95,10 @@
       "types": "./dist/number-input-stepper/cc-number-input-stepper.d.ts",
       "default": "./dist/number-input-stepper/cc-number-input-stepper.js"
     },
+    "./search-bar.js": {
+      "types": "./dist/search-bar/cc-search-bar.d.ts",
+      "default": "./dist/search-bar/cc-search-bar.js"
+    },
     "./custom-elements.json": "./custom-elements.json",
     "./package.json": "./package.json"
   },
