@@ -33,3 +33,6 @@ vscode.html-custom-data.json
 
 .vitest/
 storybook-static/
+
+# Astro generated types
+.astro/

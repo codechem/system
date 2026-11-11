@@ -1,0 +1,15 @@
+---
+interface Props {
+  code: string;
+  label?: string;
+  dark?: boolean;
+}
+const { code, label = 'Copy code', dark = false } = Astro.props;
+---
+
+<div class:list={['code', { 'code-dark': dark }]}>
+  <button class="copy" type="button" data-copy={code} aria-label={label}>
+    <span class="material-icons-round" aria-hidden="true">content_copy</span>
+  </button>
+  <pre><code>{code}</code></pre>
+</div>

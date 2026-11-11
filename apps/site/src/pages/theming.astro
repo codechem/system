@@ -1,0 +1,159 @@
+---
+import Base from '../layouts/Base.astro';
+import Code from '../components/Code.astro';
+import { palettes } from '../site';
+---
+
+<Base title="Theming">
+  <main id="main" class="lab-page">
+    <div class="prose">
+      <h1>Theming lab</h1>
+      <p class="lede">The components read every colour and radius from <code>--cc-*</code> custom properties. Pick an accent and a radius, then copy the CSS into your app.</p>
+    </div>
+
+    <div class="lab" data-lab="lab-stage">
+      <div class="lab-panel">
+        <div class="control">
+          <span class="control-label" id="lab-accent">Accent</span>
+          <div class="swatches" role="radiogroup" aria-labelledby="lab-accent">
+            {palettes.map((p) => (
+              <button type="button" role="radio" data-palette={p} aria-label={p[0].toUpperCase() + p.slice(1)} style={`--swatch: var(--cc-palette-${p}-600)`}></button>
+            ))}
+          </div>
+        </div>
+        <label class="control">
+          <span class="control-label">Radius <span class="radius-value"></span></span>
+          <input type="range" min="0" max="16" value="4" />
+        </label>
+      </div>
+
+      <div class="stage stage-preview" id="lab-stage">
+        <div class="preview-col">
+          <cc-text-input label="Full name" value="John Doe"></cc-text-input>
+          <cc-search-bar placeholder="Search projects"></cc-search-bar>
+          <div class="row">
+            <cc-chip selected>Design</cc-chip>
+            <cc-chip>Engineering</cc-chip>
+            <cc-chip>Research</cc-chip>
+          </div>
+          <cc-radio-group aria-label="Plan" name="plan" value="team">
+            <cc-radio value="solo">Solo</cc-radio>
+            <cc-radio value="team">Team</cc-radio>
+          </cc-radio-group>
+          <div class="row">
+            <cc-switch checked>Notifications</cc-switch>
+            <cc-checkbox checked>Remember me</cc-checkbox>
+          </div>
+          <cc-alert status="info"><span slot="title">Heads up</span>Alerts keep their own status colours.</cc-alert>
+          <div class="row">
+            <cc-button variant="text" color="secondary">Cancel</cc-button>
+            <cc-button variant="outlined">Save draft</cc-button>
+            <cc-button>Publish</cc-button>
+          </div>
+        </div>
+        <div class="preview-col">
+          <cc-calendar></cc-calendar>
+          <div role="tablist" aria-label="Views" class="tablist">
+            <cc-tab type="enclosed" selected>Board</cc-tab>
+            <cc-tab type="enclosed">List</cc-tab>
+            <cc-tab type="enclosed">Timeline</cc-tab>
+          </div>
+          <cc-pagination aria-label="Results pages" data-total="80"></cc-pagination>
+        </div>
+      </div>
+      <div class="lab-output">
+        <h2>Your theme</h2>
+        <div class="code code-dark">
+          <button class="copy" type="button" data-copy="" aria-label="Copy theme CSS"><span class="material-icons-round" aria-hidden="true">content_copy</span></button>
+          <pre><code data-css></code></pre>
+        </div>
+        <p class="note">The tokens' stylesheet sits in a CSS cascade layer, so a plain <code>:root</code> rule always wins.</p>
+      </div>
+    </div>
+
+    <section class="install-theme" aria-labelledby="apply-title">
+      <h2 id="apply-title">Apply it</h2>
+      <p>Paste the rule into any stylesheet that loads after the components. Scope it to a selector instead of <code>:root</code> to theme one part of a page.</p>
+      <Code code={`.marketing {\n  --cc-accent-main: var(--cc-palette-purple-600);\n  --cc-radius: 12px;\n}`} />
+    </section>
+  </main>
+</Base>
+
+<style>
+  .lab-page {
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: clamp(2.5rem, 6vw, 4rem) var(--gutter) clamp(4rem, 8vw, 6rem);
+  }
+  .lab {
+    display: grid;
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    align-items: start;
+    margin-top: 2rem;
+  }
+  .lab-panel {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+  }
+  .lab-output {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-column: 1 / -1;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  .lab-output h2 {
+    font-size: 1.6rem;
+  }
+  .lab-panel .swatches {
+    gap: 0.5rem;
+  }
+  .lab-panel .swatches button {
+    width: 1.55rem;
+    height: 1.55rem;
+  }
+  .note {
+    color: var(--ink-2);
+    font-size: 0.8125rem;
+  }
+  .stage-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: 2rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  .preview-col {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 1.5rem;
+  }
+  .preview-col cc-text-input,
+  .preview-col cc-search-bar {
+    inline-size: 100%;
+  }
+  .install-theme {
+    max-width: 46rem;
+    margin-top: clamp(3rem, 6vw, 5rem);
+  }
+  .install-theme h2 {
+    font-size: 1.6rem;
+    margin-bottom: 0.75rem;
+  }
+  .install-theme p {
+    color: var(--ink-2);
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 60rem) {
+    .lab {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .lab-panel {
+      position: static;
+    }
+  }
+</style>

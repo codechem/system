@@ -1,0 +1,29 @@
+---
+import Logo from './Logo.astro';
+import { external, pages, version } from '../site';
+
+const here = Astro.url.pathname;
+const current = (href: string) => (here.startsWith(href) ? 'page' : undefined);
+---
+
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="/"><Logo /><span>CodeChem <span class="brand-sub">Design System</span></span></a>
+    <nav class="nav" aria-label="Main">
+      <ul>{pages.map((p) => <li><a href={p.href} aria-current={current(p.href)}>{p.label}</a></li>)}</ul>
+    </nav>
+    <div class="bar-end">
+      <span class="version">v{version}</span>
+      <ul class="ext">{external.map((p) => <li><a href={p.href} rel="noopener">{p.label}</a></li>)}</ul>
+      <button class="menu-button" type="button" popovertarget="menu" aria-label="Open menu">
+        <span class="material-icons-round" aria-hidden="true">menu</span>
+      </button>
+    </div>
+  </div>
+  <nav id="menu" class="menu" popover aria-label="Main">
+    <ul>
+      {pages.map((p) => <li><a href={p.href} aria-current={current(p.href)}>{p.label}</a></li>)}
+      {external.map((p) => <li><a href={p.href} rel="noopener">{p.label}</a></li>)}
+    </ul>
+  </nav>
+</header>

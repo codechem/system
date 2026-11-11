@@ -1,0 +1,227 @@
+---
+import Base from '../layouts/Base.astro';
+import { catalog, entries } from '../catalog';
+import { storybook } from '../site';
+
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base title="Components">
+  <main id="main" class="gallery">
+    <div class="gallery-head">
+      <h1>Components</h1>
+      <p class="lede">{entries.length} components, each live below exactly as it ships on npm. Copy the import line for the ones you need.</p>
+      <nav class="jump" aria-label="Component groups">
+        {catalog.map((g) => <a href={`#${g.name.toLowerCase()}`}>{g.name}<span>{g.entries.length}</span></a>)}
+      </nav>
+    </div>
+
+    {catalog.map((g, gi) => (
+      <section class="group" id={g.name.toLowerCase()} aria-labelledby={`${g.code}-title`}>
+        <h2 class="group-title" id={`${g.code}-title`}><span>{pad(gi + 1)} /</span> {g.name}</h2>
+        <div class="sheet">
+          {g.entries.map((c, i) => {
+            const line = `import '@codechem/components/${c.path}';`;
+            return (
+              <article class="cell" id={c.slug} aria-labelledby={`${c.slug}-title`}>
+                <div class="cell-top">
+                  <span class="cell-code">{g.code}-{pad(i + 1)}</span>
+                  <span>{c.hint}</span>
+                </div>
+                <div class="stage cell-demo" set:html={c.demo} />
+                <div class="cell-foot">
+                  <div class="cell-name">
+                    <h3 id={`${c.slug}-title`}>{c.name}</h3>
+                    <p>{c.summary}</p>
+                  </div>
+                  <button class="import" type="button" data-copy={line} aria-label={`Copy import for ${c.name}`}>
+                    <code>{c.path}</code><span class="material-icons-round" aria-hidden="true">content_copy</span>
+                  </button>
+                  {storybook && <a class="more" href={storybook}>Props and examples in Storybook</a>}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </main>
+</Base>
+
+<style>
+  .gallery {
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: clamp(2.5rem, 6vw, 4rem) var(--gutter) clamp(4rem, 8vw, 6rem);
+  }
+
+  .gallery-head {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  }
+  .gallery-head h1 {
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+  }
+
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .jump a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.5rem 0.35rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+  .jump a:hover {
+    border-color: var(--green);
+  }
+  .jump span {
+    min-width: 1.5rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: var(--bg-sunk);
+    color: var(--ink-2);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .group + .group {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+  }
+  .group-title {
+    margin-bottom: 1rem;
+    font-size: 1.35rem;
+    font-weight: 650;
+  }
+  .group-title span {
+    color: var(--green-ink);
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  /* Spec sheet: a hairline-ruled grid of cells with one live component each. */
+
+  .sheet {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+    background: repeating-linear-gradient(135deg, transparent 0 9px, var(--line) 9px 10px), var(--bg-sunk);
+    box-shadow: inset -1px -1px 0 var(--line);
+  }
+  .cell {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    transition: background-color 0.2s;
+  }
+  .cell:hover,
+  .cell:target {
+    background: var(--bg-sunk);
+  }
+  .cell-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--ink-2);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+  .cell-code {
+    color: var(--green-ink);
+    font-weight: 600;
+  }
+
+  .cell-demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    gap: 0.9rem;
+    min-height: 13rem;
+    padding: 1.75rem 1.25rem;
+    border-radius: 12px;
+  }
+  @media (max-width: 30rem) {
+    .cell-demo {
+      padding-inline: 0.5rem;
+    }
+  }
+  .cell-demo :global(cc-text-input),
+  .cell-demo :global(cc-textarea),
+  .cell-demo :global(cc-search-bar),
+  .cell-demo :global(cc-accordion),
+  .cell-demo :global(cc-alert),
+  .cell-demo :global(.list) {
+    width: 100%;
+    inline-size: 100%;
+  }
+  .cell-demo :global(.list) {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .cell-foot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.5rem 1rem;
+  }
+  .cell-name h3 {
+    font-size: 1rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .cell-name p {
+    margin-top: 0.2rem;
+    color: var(--ink-2);
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+  .import {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.4rem 0.3rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+    transition: border-color 0.2s;
+  }
+  .import:hover {
+    border-color: var(--green);
+  }
+  .import code {
+    font-size: 0.75rem;
+  }
+  .import .material-icons-round {
+    color: var(--ink-2);
+  }
+  .more {
+    grid-column: 1 / -1;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,741 @@
+---
+import Base from '../layouts/Base.astro';
+import { catalog, entries } from '../catalog';
+import { palettes, version } from '../site';
+
+const snippets: Record<string, string> = {
+  HTML: `<!-- main.js: import '@codechem/components'; -->
+<cc-text-input label="Work email"></cc-text-input>
+<cc-switch checked>Email notifications</cc-switch>
+<cc-button>Save changes</cc-button>`,
+  React: `import '@codechem/components';
+
+export function Settings() {
+  return (
+    <form>
+      <cc-switch checked>Email notifications</cc-switch>
+      <cc-button onClick={save}>Save changes</cc-button>
+    </form>
+  );
+}`,
+  Vue: `<!-- vite.config: isCustomElement: (tag) => tag.startsWith('cc-') -->
+<template>
+  <cc-switch :checked="alerts" @change="alerts = $event.target.checked">
+    Email notifications
+  </cc-switch>
+  <cc-button @click="save">Save changes</cc-button>
+</template>`,
+  Angular: `@Component({
+  selector: 'app-settings',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: \`
+    <cc-switch checked>Email notifications</cc-switch>
+    <cc-button (click)="save()">Save changes</cc-button>
+  \`,
+})
+export class SettingsComponent {}`,
+};
+const frameworks = Object.keys(snippets);
+
+const team = [
+  { initials: 'JD', name: 'John Doe', email: 'john.doe@acme.dev', role: 'Owner', color: 'green' },
+  { initials: 'JS', name: 'Jane Smith', email: 'jane.smith@acme.dev', role: 'Editor', color: 'blue' },
+  { initials: 'AL', name: 'Alex Lee', email: 'alex.lee@acme.dev', role: 'Viewer', color: 'gray' },
+];
+
+const notifications = [
+  { label: 'Mentions', hint: 'When someone tags you in a comment.', on: true },
+  { label: 'Weekly digest', hint: 'A Monday summary of your projects.', on: true },
+  { label: 'Product updates', hint: 'New components and releases.', on: false },
+];
+
+const roles = [
+  { title: 'Senior Front-End Engineer', meta: 'Skopje · Hybrid', status: 'Open', color: 'green' },
+  { title: 'Product Designer', meta: 'Remote · Europe', status: 'Interviewing', color: 'blue' },
+  { title: 'QA Engineer', meta: 'Skopje · On site', status: 'Paused', color: 'yellow' },
+];
+---
+
+<Base>
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <a class="pill" href="/components/"><span class="pill-tag">v{version}</span>{entries.length} components on npm</a>
+        <h1 id="hero-title">Interfaces, carefully assembled.</h1>
+        <p class="lede">The CodeChem design system as accessible, themeable web components. Use them in React, Vue, Angular or plain HTML with a single import.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="/getting-started/">Get started</a>
+          <a class="btn" href="/components/">Browse components</a>
+        </div>
+        <button class="install" type="button" data-copy="npm i @codechem/components" aria-label="Copy install command">
+          <span class="prompt" aria-hidden="true">$</span><code>npm i @codechem/components</code>
+          <span class="material-icons-round" aria-hidden="true">content_copy</span>
+        </button>
+      </div>
+
+      <div class="wall-frame stage" role="img" aria-label="Example screens built with CodeChem components: team, open roles, booking calendar, activity, monthly numbers, notifications and a new-project form">
+        <div class="wall" inert>
+          <div class="wall-col">
+            <article class="block">
+              <header class="block-head">
+                <h2>Your team</h2>
+                <p>Invite and manage who can see this project.</p>
+              </header>
+              <div class="invite">
+                <cc-text-input label="Invite by email" placeholder="name@acme.dev"></cc-text-input>
+                <cc-button>Invite</cc-button>
+              </div>
+              <ul class="rows">
+                {team.map((m) => (
+                  <li class="row">
+                    <span class="avatar" style={`--hue: var(--cc-palette-${m.color}-600)`} aria-hidden="true">{m.initials}</span>
+                    <span class="who"><strong>{m.name}</strong><span>{m.email}</span></span>
+                    <cc-badge color={m.color} variant="subtle">{m.role}</cc-badge>
+                  </li>
+                ))}
+              </ul>
+            </article>
+
+            <article class="block">
+              <header class="block-head">
+                <h2>Open roles</h2>
+                <p>Positions the hiring team is working on.</p>
+              </header>
+              <cc-search-bar placeholder="Search roles"></cc-search-bar>
+              <div role="tablist" aria-label="Departments" class="tablist">
+                <cc-tab type="line" selected>All</cc-tab>
+                <cc-tab type="line">Engineering</cc-tab>
+                <cc-tab type="line">Design</cc-tab>
+              </div>
+              <ul class="rows">
+                {roles.map((r) => (
+                  <li class="row">
+                    <span class="who"><strong>{r.title}</strong><span>{r.meta}</span></span>
+                    <cc-badge color={r.color} variant="outline">{r.status}</cc-badge>
+                  </li>
+                ))}
+              </ul>
+              <cc-pagination aria-label="Roles pages" data-total="34"></cc-pagination>
+            </article>
+          </div>
+
+          <div class="wall-col">
+            <article class="block">
+              <header class="block-head">
+                <h2>Book a design review</h2>
+                <p>30 minutes with the design system team.</p>
+              </header>
+              <cc-calendar></cc-calendar>
+              <div class="chips" aria-label="Times">
+                <cc-chip>09:30</cc-chip>
+                <cc-chip selected>11:00</cc-chip>
+                <cc-chip>14:30</cc-chip>
+                <cc-chip>16:00</cc-chip>
+              </div>
+              <cc-button class="wide">Book 11:00</cc-button>
+            </article>
+
+            <article class="block">
+              <cc-alert status="success"><span slot="title">Invoice #3461 paid</span>€4,280.00 from Acme Ltd arrived today.</cc-alert>
+            </article>
+
+            <article class="block">
+              <header class="block-head">
+                <h2>Recent activity</h2>
+              </header>
+              <div role="list" class="list">
+                <cc-list-item label="Jane Smith approved the timesheet" supporting-text="2 minutes ago" leading="icon" icon="task_alt" hide-remove-button></cc-list-item>
+                <cc-list-item label="Alex Lee uploaded brand-guide.pdf" supporting-text="1 hour ago" leading="icon" icon="description" hide-remove-button></cc-list-item>
+                <cc-list-item label="John Doe released 0.0.4" supporting-text="Yesterday" leading="icon" icon="rocket_launch" hide-remove-button></cc-list-item>
+              </div>
+            </article>
+          </div>
+
+          <div class="wall-col">
+            <article class="block">
+              <header class="block-head">
+                <h2>This month</h2>
+                <p>Billable work across all projects.</p>
+              </header>
+              <dl class="kpis">
+                <div><dt>Hours logged</dt><dd><strong>1,284</strong><cc-badge color="green" variant="subtle">+12%</cc-badge></dd></div>
+                <div><dt>Utilisation</dt><dd><strong>86%</strong><cc-badge color="red" variant="subtle">−3%</cc-badge></dd></div>
+              </dl>
+            </article>
+
+            <article class="block">
+              <header class="block-head">
+                <h2>Notifications</h2>
+                <p>Choose what you hear about.</p>
+              </header>
+              <ul class="rows">
+                {notifications.map((n) => (
+                  <li class="row">
+                    <span class="who"><strong>{n.label}</strong><span>{n.hint}</span></span>
+                    <cc-switch checked={n.on || undefined} aria-label={n.label}></cc-switch>
+                  </li>
+                ))}
+              </ul>
+            </article>
+
+            <article class="block">
+              <header class="block-head">
+                <h2>New project</h2>
+                <p>Set it up now, invite people later.</p>
+              </header>
+              <cc-text-input label="Project name" value="Spring launch"></cc-text-input>
+              <div class="field">
+                <span class="field-label">Team size</span>
+                <cc-number-input-stepper aria-label="Team size" value="4" min="1" max="12"></cc-number-input-stepper>
+              </div>
+              <cc-radio-group aria-label="Visibility" name="visibility" value="team">
+                <cc-radio value="team">Team only</cc-radio>
+                <cc-radio value="company">Whole company</cc-radio>
+              </cc-radio-group>
+              <cc-checkbox checked>Create a kickoff meeting</cc-checkbox>
+              <div class="actions">
+                <cc-button variant="text" color="secondary">Cancel</cc-button>
+                <cc-button>Create project</cc-button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="split" aria-labelledby="anywhere-title">
+      <div class="split-copy">
+        <h2 id="anywhere-title">Works wherever HTML&nbsp;works.</h2>
+        <p>Standard custom elements built with Lit. No framework wrapper to install, no build plugin to configure.</p>
+        <ul class="facts">
+          <li><strong>One import.</strong> Load everything, or one component at a time to keep bundles small.</li>
+          <li><strong>Encapsulated styles.</strong> Shadow DOM keeps your CSS and ours from colliding.</li>
+          <li><strong>Native events.</strong> Listen for <code>change</code> and <code>input</code> like on any form control.</li>
+          <li><strong>Editor support.</strong> Types and VS Code autocomplete ship with the package.</li>
+        </ul>
+      </div>
+      <div class="code code-dark">
+        <div class="code-head">
+          <div role="tablist" aria-label="Framework" id="framework-tabs" class="tablist">
+            {frameworks.map((f, i) => <cc-tab type="line" selected={i === 0 || undefined}>{f}</cc-tab>)}
+          </div>
+          <button class="copy" type="button" data-copy={snippets.HTML} aria-label="Copy code">
+            <span class="material-icons-round" aria-hidden="true">content_copy</span>
+          </button>
+        </div>
+        {frameworks.map((f, i) => <pre data-framework={f} hidden={i > 0}><code>{snippets[f]}</code></pre>)}
+      </div>
+    </section>
+
+    <section class="theming" aria-labelledby="theming-title">
+      <div class="theming-inner" data-lab="home-stage">
+        <div class="theming-copy">
+          <h2 id="theming-title">Your brand is one variable away.</h2>
+          <p>Every colour, radius and surface comes from <code>--cc-*</code> custom properties. Override them on <code>:root</code>. No <code>!important</code>, no rebuild.</p>
+          <div class="lab-controls">
+            <div class="control">
+              <span class="control-label" id="home-accent">Accent</span>
+              <div class="swatches" role="radiogroup" aria-labelledby="home-accent">
+                {palettes.map((p) => (
+                  <button type="button" role="radio" data-palette={p} aria-label={p[0].toUpperCase() + p.slice(1)} style={`--swatch: var(--cc-palette-${p}-600)`}></button>
+                ))}
+              </div>
+            </div>
+            <label class="control">
+              <span class="control-label">Radius <span class="radius-value"></span></span>
+              <input type="range" min="0" max="16" value="4" />
+            </label>
+          </div>
+          <a class="arrow-link" href="/theming/">Open the theming lab</a>
+        </div>
+        <div class="stage stage-lab" id="home-stage">
+          <div class="row">
+            <cc-button>Publish</cc-button>
+            <cc-button variant="outlined">Preview</cc-button>
+          </div>
+          <cc-text-input label="Project name" value="Spring launch"></cc-text-input>
+          <div class="row">
+            <cc-chip selected>Design</cc-chip>
+            <cc-chip>Engineering</cc-chip>
+            <cc-badge color="green" variant="subtle">Live</cc-badge>
+          </div>
+          <div class="row">
+            <cc-switch checked>Notify team</cc-switch>
+            <cc-checkbox checked>Pin</cc-checkbox>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog" aria-labelledby="catalog-title">
+      <div class="catalog-head">
+        <h2 id="catalog-title">{entries.length} components, and counting.</h2>
+        <a class="arrow-link" href="/components/">See them all</a>
+      </div>
+      <div class="index">
+        {catalog.map((g) => (
+          <div class="index-group">
+            <h3>{g.name}</h3>
+            <ul>{g.entries.map((c) => <li><a href={`/components/#${c.slug}`}>{c.name}</a></li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2.5rem, 5vw, 4rem);
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: clamp(3.5rem, 9vw, 7rem) var(--gutter) clamp(4rem, 8vw, 6rem);
+  }
+
+  .hero-copy {
+    max-width: 44rem;
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.25rem 0.85rem 0.25rem 0.3rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--ink-2);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+  .pill:hover {
+    border-color: var(--green);
+    color: var(--ink);
+  }
+  .pill-tag {
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    background: var(--green-tint);
+    color: var(--green-ink);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .install {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.75rem 0.55rem 1rem;
+    border: 1px dashed var(--line-strong);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+  }
+  .install:hover {
+    border-style: solid;
+  }
+  .install .prompt {
+    color: var(--green-ink);
+    font-family: var(--mono);
+  }
+  .install code {
+    font-size: 0.9375rem;
+  }
+
+  .wall-frame {
+    position: relative;
+    height: clamp(32rem, 64vh, 40rem);
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--cc-surface-surface-shade);
+    box-shadow: 0 40px 80px -40px oklch(0.23 0.025 258 / 0.5);
+  }
+  .wall-frame::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 7rem;
+    background: linear-gradient(to bottom, transparent, var(--cc-surface-surface-shade));
+    pointer-events: none;
+  }
+
+  .wall {
+    display: grid;
+    grid-template-columns: repeat(3, 19.5rem);
+    gap: 1rem;
+    align-items: start;
+    width: max-content;
+    margin-inline: auto;
+    padding: 2rem;
+  }
+  .wall-col {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .wall-col:nth-child(2) {
+    margin-top: 3.5rem;
+  }
+  .wall-col:nth-child(3) {
+    margin-top: 1.5rem;
+  }
+
+  .block {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--cc-surface-surface-2);
+    border-radius: 14px;
+    background: var(--cc-surface-surface-0);
+  }
+  .block:has(> cc-alert:only-child) {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  .block-head h2 {
+    font-size: 1rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .block-head p {
+    margin-top: 0.2rem;
+    color: var(--cc-text-low-emphasis);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .block cc-text-input,
+  .block cc-search-bar {
+    inline-size: 100%;
+  }
+  .block .wide {
+    justify-self: stretch;
+  }
+  .block cc-calendar {
+    justify-self: center;
+  }
+
+  .invite {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+    align-items: end;
+  }
+
+  .rows {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0;
+    border-top: 1px solid var(--cc-surface-surface-2);
+  }
+  .row:first-child {
+    border-top: 0;
+    padding-top: 0.2rem;
+  }
+  .who {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+  .who strong {
+    font-weight: 600;
+  }
+  .who span {
+    overflow: hidden;
+    color: var(--cc-text-low-emphasis);
+    font-size: 0.8125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    background: color-mix(in oklch, var(--hue) 30%, var(--cc-surface-surface-1));
+    color: var(--cc-text-high-emphasis);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .kpis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+  }
+  .kpis > div + div {
+    padding-left: 1rem;
+    border-left: 1px solid var(--cc-surface-surface-2);
+  }
+  .kpis dt {
+    color: var(--cc-text-low-emphasis);
+    font-size: 0.8125rem;
+  }
+  .kpis dd {
+    display: grid;
+    justify-items: start;
+    gap: 0.4rem;
+    margin: 0.25rem 0 0;
+  }
+  .kpis strong {
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .field-label {
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--cc-surface-surface-2);
+  }
+
+  .list {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  @media (max-width: 40rem) {
+    .wall-frame {
+      height: auto;
+      max-height: 40rem;
+    }
+    .wall {
+      grid-template-columns: minmax(0, 1fr);
+      width: auto;
+      padding: 1rem;
+    }
+    .wall-col:not(:first-child) {
+      display: none;
+    }
+  }
+
+  /* Framework split */
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: center;
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: clamp(4rem, 9vw, 7rem) var(--gutter);
+  }
+  .split-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+  .split-copy > p {
+    max-width: 34rem;
+    color: var(--ink-2);
+  }
+  .facts {
+    display: grid;
+    gap: 0.9rem;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .facts li {
+    position: relative;
+    padding-left: 1.5rem;
+    color: var(--ink-2);
+  }
+  .facts li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: 0.55rem;
+    aspect-ratio: 0.88;
+    background: var(--green);
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  }
+  .facts strong {
+    color: var(--ink);
+    font-weight: 650;
+  }
+  .split .code-dark pre {
+    min-height: 15rem;
+  }
+  @media (max-width: 56rem) {
+    .split {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* Theming band */
+
+  .theming {
+    background: var(--green-deep);
+    color: #fff;
+  }
+  .theming-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: center;
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: clamp(4rem, 9vw, 7rem) var(--gutter);
+  }
+  .theming-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    gap: 1.5rem;
+  }
+  .theming-copy p {
+    max-width: 32rem;
+    color: oklch(1 0 0 / 0.86);
+  }
+  .theming-copy code,
+  .theming .arrow-link {
+    color: #fff;
+  }
+  .theming :focus-visible {
+    outline-color: #fff;
+  }
+  .theming .swatches button[aria-checked='true'] {
+    box-shadow: 0 0 0 2px var(--green-deep), 0 0 0 4px #fff;
+  }
+  .theming input[type='range'] {
+    accent-color: #fff;
+  }
+  .stage-lab {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    box-shadow: 0 30px 60px -30px oklch(0.1 0.03 160 / 0.6);
+  }
+  @media (max-width: 56rem) {
+    .theming-inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* Catalog index */
+
+  .catalog {
+    max-width: var(--page);
+    margin: 0 auto;
+    padding: clamp(4rem, 9vw, 7rem) var(--gutter);
+  }
+  .catalog-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .index {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    border-top: 1px solid var(--line);
+  }
+  .index-group {
+    padding: 1.5rem 1.5rem 1.5rem 0;
+  }
+  .index-group h3 {
+    margin-bottom: 0.75rem;
+    color: var(--ink-2);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .index-group ul {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .index-group a {
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .index-group a:hover {
+    color: var(--green-ink);
+    text-decoration: underline;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-copy > * {
+      animation: rise 0.9s var(--ease) both;
+    }
+    .hero-copy > :nth-child(2) {
+      animation-delay: 0.06s;
+    }
+    .hero-copy > :nth-child(3) {
+      animation-delay: 0.12s;
+    }
+    .hero-copy > :nth-child(4) {
+      animation-delay: 0.18s;
+    }
+    .hero-copy > :nth-child(5) {
+      animation-delay: 0.24s;
+    }
+    .wall-col {
+      animation: rise 1.2s var(--ease) both;
+    }
+    .wall-col:nth-child(1) {
+      animation-delay: 0.25s;
+    }
+    .wall-col:nth-child(2) {
+      animation-delay: 0.35s;
+    }
+    .wall-col:nth-child(3) {
+      animation-delay: 0.45s;
+    }
+  }
+</style>

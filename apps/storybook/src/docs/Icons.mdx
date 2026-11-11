@@ -38,17 +38,11 @@ export const common = [
 
 # Icons
 
-The components draw their icons with Google's **[Material Icons Round](https://fonts.google.com/icons?icon.set=Material+Icons&icon.style=Rounded)** font: the classic Material Icons set, Round style. It is the same set and style as the icons in Figma.
+The components draw their icons with the **[Material Icons Round](https://fonts.google.com/icons?icon.set=Material+Icons&icon.style=Rounded)** font: the classic Material Icons set, Round style. It is the same set and style as the icons in Figma.
 
-## Load the font
+## The font is bundled
 
-The font is not bundled with the components. Load it once in your app, next to Kumbh Sans:
-
-```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" />
-```
-
-Without it, each icon shows the start of its name as text, such as "ch" for `check_box`. To self-host instead of using Google Fonts, the [`material-icons`](https://www.npmjs.com/package/material-icons) npm package ships the same font files.
+The components include the Material Icons Round font file, so icons work as soon as a component is imported. The font's licence (Apache 2.0) is in the package's `dist/fonts/` folder.
 
 ## Put an icon in a component
 

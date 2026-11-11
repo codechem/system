@@ -1,0 +1,79 @@
+---
+import Base from '../layouts/Base.astro';
+import Code from '../components/Code.astro';
+
+const fonts = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:YOPQ,wght@40..300,100..900&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" />`;
+
+const usage = `<cc-text-input label="Work email" required></cc-text-input>
+<cc-button>Create account</cc-button>`;
+
+const iconUsage = `<cc-button>
+  <span slot="leading" class="material-icons-round" aria-hidden="true">add</span>
+  New project
+</cc-button>`;
+
+const sections = [
+  ['install', 'Install'],
+  ['fonts', 'Load the fonts'],
+  ['import', 'Import components'],
+  ['use', 'Use them'],
+  ['frameworks', 'Frameworks'],
+  ['icons', 'Icons'],
+];
+---
+
+<Base title="Getting started">
+  <div class="docs">
+    <nav class="side" aria-label="On this page">
+      <p class="side-heading">On this page</p>
+      <ul>{sections.map(([id, label]) => <li><a href={`#${id}`}>{label}</a></li>)}</ul>
+    </nav>
+
+    <main id="main" class="prose">
+      <h1>Getting started</h1>
+      <p class="lede">From an empty project to your first component in about two minutes. You need a bundler such as Vite, webpack or the one your framework ships with.</p>
+
+      <h2 id="install">Install</h2>
+      <p>The package brings its tokens and <code>lit</code> along as dependencies.</p>
+      <Code code="npm i @codechem/components" />
+
+      <h2 id="fonts">Load the fonts</h2>
+      <p>The components use Kumbh Sans for text and Material Icons Round for icons. They are not bundled, so add both to your page's <code>&lt;head&gt;</code>.</p>
+      <Code code={fonts} />
+
+      <h2 id="import">Import components</h2>
+      <p>Importing registers the custom elements and adds the design tokens to the page once. Import everything:</p>
+      <Code code="import '@codechem/components';" />
+      <p>Or only what you use, to keep the bundle small. Every component has its own entry point, listed on the <a href="/components/">Components</a> page.</p>
+      <Code code={`import '@codechem/components/button.js';\nimport '@codechem/components/text-input.js';`} />
+
+      <h2 id="use">Use them</h2>
+      <p>Write the tags in your markup like any HTML element. Attributes configure them, and they fire standard DOM events such as <code>change</code> and <code>input</code>.</p>
+      <Code code={usage} />
+      <div class="stage stage-demo">
+        <cc-text-input label="Work email" required></cc-text-input>
+        <cc-button>Create account</cc-button>
+      </div>
+
+      <h2 id="frameworks">Frameworks</h2>
+      <dl class="frameworks">
+        <dt>React 19+</dt>
+        <dd>Works with no setup. React passes attributes and properties to custom elements natively.</dd>
+        <dt>Vue</dt>
+        <dd>Tell the compiler that <code>cc-</code> tags are custom elements: <code>isCustomElement: (tag) =&gt; tag.startsWith('cc-')</code>.</dd>
+        <dt>Angular</dt>
+        <dd>Add <code>CUSTOM_ELEMENTS_SCHEMA</code> to the component or module that uses them.</dd>
+      </dl>
+
+      <h2 id="icons">Icons</h2>
+      <p>Put a Material Icons Round ligature in a component's icon slot. Keep <code>aria-hidden</code> so screen readers skip the icon's name.</p>
+      <Code code={iconUsage} />
+
+      <nav class="next" aria-label="Next steps">
+        <a href="/components/"><span>Next</span>Browse the components</a>
+        <a href="/theming/"><span>Then</span>Make it your brand</a>
+      </nav>
+    </main>
+  </div>
+</Base>

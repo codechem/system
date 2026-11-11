@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: design-system-frontpage
+expected_outcome: |
+  A calm, uncrowded page built only from @codechem/components 0.0.4 and --cc-* tokens, with colours taken from tokens, realistic content, correct component APIs, clear structure and navigation, and no horizontal overflow on a 390px phone.

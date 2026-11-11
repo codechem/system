@@ -1,0 +1,12 @@
+---
+import Logo from './Logo.astro';
+import { external, pages, version } from '../site';
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <a class="brand" href="/"><Logo /><span>CodeChem</span></a>
+    <p>Built with <code>@codechem/components@{version}</code>, installed from npm like any other project.</p>
+    <ul>{[...pages, ...external].map((p) => <li><a href={p.href}>{p.label}</a></li>)}</ul>
+  </div>
+</footer>
