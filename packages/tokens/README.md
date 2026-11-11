@@ -30,7 +30,7 @@ Then use the tokens in your CSS:
 }
 ```
 
-The typeface token names **Kumbh Sans**, which you load yourself, for example from Google Fonts.
+The typeface token names **Kumbh Sans**. `@codechem/components` bundles it; if you use the tokens without the components, load Kumbh Sans yourself, for example from Google Fonts.
 
 ### As a constructable stylesheet
 
