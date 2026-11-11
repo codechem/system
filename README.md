@@ -1,5 +1,7 @@
 # CodeChem Design System
 
+[![CodeChem Design System: Interfaces, carefully assembled. Preview of the real web components.](apps/site/public/social-preview.png)](https://system.codechem.dev)
+
 Framework-agnostic web components built with [Lit](https://lit.dev), styled with design tokens exported from the CodeChem Figma design system.
 
 ```html
