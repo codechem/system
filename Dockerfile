@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-# ---- Build: compile tokens, generate the manifest, build static Storybook ----
+# ---- Build: compile packages (including the manifest), build static Storybook ----
 FROM node:26-slim AS build
 
 WORKDIR /app
@@ -17,9 +17,7 @@ RUN --mount=type=cache,target=/root/.npm \
     npm ci --ignore-scripts --no-audit --no-fund
 
 COPY . .
-RUN npm run build -w @codechem/tokens \
- && npm run analyze -w @codechem/components \
- && npm run build-storybook -w @codechem/storybook
+RUN npm run build-storybook
 
 # ---- Serve: static files on nginx, running as a non-root user ----
 FROM nginxinc/nginx-unprivileged:stable-alpine

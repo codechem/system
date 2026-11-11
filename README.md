@@ -68,7 +68,7 @@ Components load the default tokens themselves: `@codechem/tokens` is a dependenc
 npm run storybook
 ```
 
-This builds the tokens, generates the components' Custom Elements Manifest (which drives the Storybook controls and docs), then opens Storybook at <http://localhost:6006>.
+This builds the tokens and component package, including the Custom Elements Manifest (which drives the Storybook controls and docs), then opens Storybook at <http://localhost:6006>. The compiled component package is required by the documentation examples, so generating the manifest alone is not sufficient.
 
 Component and story changes reload live. Restart the command after changing tokens, or after adding or renaming a property, slot or event, so the Controls and Docs tables pick it up.
 
@@ -110,7 +110,7 @@ Run from the repo root:
 | `npm run storybook` | Starts Storybook on port 6006 |
 | `npm run build -w @codechem/tokens` | Rebuilds only the tokens |
 | `npm run analyze -w @codechem/components` | Regenerates `custom-elements.json` and the VS Code HTML data |
-| `npm run build-storybook` | Builds the tokens and manifest, then a static Storybook into `apps/storybook/storybook-static` |
+| `npm run build-storybook` | Builds the tokens and component package (including the manifest), then a static Storybook into `apps/storybook/storybook-static` |
 
 ## Project layout
 
@@ -201,7 +201,7 @@ Both packages are released together with the same version. Push a version tag:
 git tag v0.1.0 && git push origin v0.1.0
 ```
 
-The `publish` job in `.github/workflows/release.yml` runs after the tests pass. It sets both packages to the tag's version and publishes them with provenance. Use plain release versions only: a prerelease tag such as `v1.0.0-beta.1` would still be published as `latest`. The full setup is in `docs/superpowers/2026-11-09-ci-cd.md`.
+The `publish` job in `.github/workflows/release.yml` runs after the tests pass. It sets both packages to the tag's version and publishes them with provenance. Stable versions publish with `--tag latest`; prereleases such as `v1.0.0-beta.1` publish with `--tag next`, leaving the default stable install unchanged. Install a prerelease with `npm install @codechem/components@next` or select an exact version. GitHub Release notes remain stable-only. The full setup is in `docs/superpowers/2026-11-09-ci-cd.md`.
 
 ### Automatic GitHub release notes
 
