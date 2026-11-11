@@ -2,9 +2,6 @@
 import Base from '../layouts/Base.astro';
 import Code from '../components/Code.astro';
 
-const fonts = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:YOPQ,wght@40..300,100..900&display=swap" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" />`;
-
 const usage = `<cc-text-input label="Work email" required></cc-text-input>
 <cc-button>Create account</cc-button>`;
 
@@ -15,7 +12,7 @@ const iconUsage = `<cc-button>
 
 const sections = [
   ['install', 'Install'],
-  ['fonts', 'Load the fonts'],
+  ['fonts', 'Fonts are included'],
   ['import', 'Import components'],
   ['use', 'Use them'],
   ['frameworks', 'Frameworks'],
@@ -38,9 +35,8 @@ const sections = [
       <p>The package brings its tokens and <code>lit</code> along as dependencies.</p>
       <Code code="npm i @codechem/components" />
 
-      <h2 id="fonts">Load the fonts</h2>
-      <p>The components use Kumbh Sans for text and Material Icons Round for icons. They are not bundled, so add both to your page's <code>&lt;head&gt;</code>.</p>
-      <Code code={fonts} />
+      <h2 id="fonts">Fonts are included</h2>
+      <p>The components bundle Kumbh Sans for text and Material Icons Round for icons. Importing a component registers both fonts, so there is nothing to load.</p>
 
       <h2 id="import">Import components</h2>
       <p>Importing registers the custom elements and adds the design tokens to the page once. Import everything:</p>
