@@ -99,6 +99,10 @@
       "types": "./dist/search-bar/cc-search-bar.d.ts",
       "default": "./dist/search-bar/cc-search-bar.js"
     },
+    "./calendar.js": {
+      "types": "./dist/calendar/cc-calendar.d.ts",
+      "default": "./dist/calendar/cc-calendar.js"
+    },
     "./custom-elements.json": "./custom-elements.json",
     "./package.json": "./package.json"
   },

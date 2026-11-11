@@ -3,7 +3,7 @@ import { playwright } from '@vitest/browser-playwright';
 
 export default defineConfig({
   optimizeDeps: {
-    include: ['lit/directives/live.js'],
+    include: ['lit/directives/live.js', 'lit/directives/repeat.js'],
   },
   test: {
     browser: {
