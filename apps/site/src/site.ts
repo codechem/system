@@ -4,7 +4,8 @@ export const version: string = JSON.parse(
   readFileSync('node_modules/@codechem/components/package.json', 'utf8'),
 ).version;
 
-export const storybook: string | undefined = import.meta.env.PUBLIC_STORYBOOK_URL;
+export const storybook: string =
+  import.meta.env.PUBLIC_STORYBOOK_URL ||'https://storybook.system.dokploy.codechem.dev/';
 
 export const pages = [
   { label: 'Getting started', href: '/getting-started/' },

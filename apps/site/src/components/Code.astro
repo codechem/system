@@ -1,15 +1,20 @@
 ---
+import { Code as Highlight } from 'astro:components';
+import type { ComponentProps } from 'astro/types';
+import { syntax } from '../syntax';
+
 interface Props {
   code: string;
+  lang?: ComponentProps<typeof Highlight>['lang'];
   label?: string;
   dark?: boolean;
 }
-const { code, label = 'Copy code', dark = false } = Astro.props;
+const { code, lang = 'plaintext', label = 'Copy code', dark = false } = Astro.props;
 ---
 
 <div class:list={['code', { 'code-dark': dark }]}>
   <button class="copy" type="button" data-copy={code} aria-label={label}>
     <span class="material-icons-round" aria-hidden="true">content_copy</span>
   </button>
-  <pre><code>{code}</code></pre>
+  <Highlight code={code} lang={lang} theme={syntax} />
 </div>

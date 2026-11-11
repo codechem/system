@@ -1,7 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
 import { catalog, entries } from '../catalog';
-import { palettes, version } from '../site';
+import { palettes, storybook, version } from '../site';
+import { Code as Highlight } from 'astro:components';
+import Code from '../components/Code.astro';
+import { syntax } from '../syntax';
 
 const snippets: Record<string, string> = {
   HTML: `<!-- main.js: import '@codechem/components'; -->
@@ -36,6 +39,7 @@ export function Settings() {
 export class SettingsComponent {}`,
 };
 const frameworks = Object.keys(snippets);
+const langs = { HTML: 'html', React: 'tsx', Vue: 'vue', Angular: 'angular-ts' } as const;
 
 const tokensSnippet = `/* main.js: import '@codechem/tokens/tokens.css'; */
 .card {
@@ -76,6 +80,7 @@ const roles = [
         <div class="hero-actions">
           <a class="btn btn-primary" href="/getting-started/">Get started</a>
           <a class="btn" href="/components/">Browse components</a>
+          <a class="btn" href={storybook} rel="noopener">Open Storybook</a>
         </div>
         <button class="install" type="button" data-copy="npm i @codechem/components" aria-label="Copy install command">
           <span class="prompt" aria-hidden="true">$</span><code>npm i @codechem/components</code>
@@ -233,18 +238,22 @@ const roles = [
             <span class="material-icons-round" aria-hidden="true">content_copy</span>
           </button>
         </div>
-        {frameworks.map((f, i) => <pre data-framework={f} hidden={i > 0}><code>{snippets[f]}</code></pre>)}
+        <div class="snippets">
+          {frameworks.map((f, i) => (
+            <Highlight code={snippets[f]} lang={langs[f as keyof typeof langs]} theme={syntax} data-framework={f} {...(i > 0 && { hidden: true })} />
+          ))}
+        </div>
       </div>
     </section>
 
-    <section class="theming" aria-labelledby="theming-title">
+    <section class="theming" aria-labelledby="theming-title" data-tint>
       <div class="theming-inner" data-lab="home-stage">
         <div class="theming-copy">
           <h2 id="theming-title">Your brand is one variable away.</h2>
           <p>Every colour, radius and surface comes from <code>--cc-*</code> custom properties. Override them on <code>:root</code>. No <code>!important</code>, no rebuild.</p>
           <div class="lab-controls">
             <div class="control">
-              <span class="control-label" id="home-accent">Accent</span>
+              <span class="control-label"><span id="home-accent">Accent</span><span class="control-value" data-accent-name></span></span>
               <div class="swatches" role="radiogroup" aria-labelledby="home-accent">
                 {palettes.map((p) => (
                   <button type="button" role="radio" data-palette={p} aria-label={p[0].toUpperCase() + p.slice(1)} style={`--swatch: var(--cc-palette-${p}-600)`}></button>
@@ -292,12 +301,7 @@ const roles = [
         </button>
         <a class="arrow-link" href="https://www.npmjs.com/package/@codechem/tokens" rel="noopener">Read the tokens docs</a>
       </div>
-      <div class="code code-dark">
-        <button class="copy" type="button" data-copy={tokensSnippet} aria-label="Copy code">
-          <span class="material-icons-round" aria-hidden="true">content_copy</span>
-        </button>
-        <pre><code>{tokensSnippet}</code></pre>
-      </div>
+      <Code code={tokensSnippet} lang="css" dark />
     </section>
 
     <section class="catalog" aria-labelledby="catalog-title">
@@ -637,8 +641,20 @@ const roles = [
   .split-copy > .arrow-link {
     justify-self: start;
   }
-  .split .code-dark pre {
+  .split :global(.code-dark pre) {
     min-height: 15rem;
+  }
+  /* All framework snippets share one grid cell, so the box is always as tall as the longest
+     and switching tabs never moves the layout. Inactive ones stay laid out but invisible. */
+  .snippets {
+    display: grid;
+  }
+  .snippets > :global(pre) {
+    grid-area: 1 / 1;
+  }
+  .snippets > :global(pre[hidden]) {
+    display: block;
+    visibility: hidden;
   }
   @media (max-width: 56rem) {
     .split {
@@ -648,9 +664,24 @@ const roles = [
 
   /* Theming band */
 
+  /* The band takes the chosen accent's deep step (site.ts sets --tint), evened out to one
+     lightness and a capped chroma so every hue reads as the same weight behind the stage. */
   .theming {
-    background: var(--green-deep);
+    --tint: var(--cc-palette-green-800);
+    --band: var(--green-deep);
+    background: var(--band);
     color: #fff;
+    transition: background-color 0.5s var(--ease);
+  }
+  @supports (color: oklch(from red l c h)) {
+    .theming {
+      --band: oklch(from var(--tint) 0.4 min(c, 0.11) h);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .theming {
+      transition: none;
+    }
   }
   .theming-inner {
     display: grid;
@@ -679,7 +710,7 @@ const roles = [
     outline-color: #fff;
   }
   .theming .swatches button[aria-checked='true'] {
-    box-shadow: 0 0 0 2px var(--green-deep), 0 0 0 4px #fff;
+    box-shadow: 0 0 0 2px var(--band), 0 0 0 4px #fff;
   }
   .theming input[type='range'] {
     accent-color: #fff;
@@ -689,7 +720,7 @@ const roles = [
     grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
     padding: clamp(1.5rem, 4vw, 2.5rem);
-    box-shadow: 0 30px 60px -30px oklch(0.1 0.03 160 / 0.6);
+    box-shadow: 0 30px 60px -30px color-mix(in oklch, var(--band) 30%, oklch(0.1 0 0 / 0.75));
   }
   @media (max-width: 56rem) {
     .theming-inner {

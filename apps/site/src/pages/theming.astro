@@ -13,68 +13,81 @@ import { palettes } from '../site';
 
     <div class="lab" data-lab="lab-stage">
       <div class="lab-panel">
-        <div class="control">
-          <span class="control-label" id="lab-accent">Accent</span>
-          <div class="swatches" role="radiogroup" aria-labelledby="lab-accent">
-            {palettes.map((p) => (
-              <button type="button" role="radio" data-palette={p} aria-label={p[0].toUpperCase() + p.slice(1)} style={`--swatch: var(--cc-palette-${p}-600)`}></button>
-            ))}
+        <div class="lab-controls lab-tools">
+          <div class="control">
+            <span class="control-label"><span id="lab-accent">Accent</span><span class="control-value" data-accent-name></span></span>
+            <div class="swatches" role="radiogroup" aria-labelledby="lab-accent">
+              {palettes.map((p) => (
+                <button type="button" role="radio" data-palette={p} aria-label={p[0].toUpperCase() + p.slice(1)} style={`--swatch: var(--cc-palette-${p}-600)`}></button>
+              ))}
+            </div>
           </div>
+          <label class="control">
+            <span class="control-label">Radius <span class="radius-value"></span></span>
+            <input type="range" min="0" max="16" value="4" />
+          </label>
         </div>
-        <label class="control">
-          <span class="control-label">Radius <span class="radius-value"></span></span>
-          <input type="range" min="0" max="16" value="4" />
-        </label>
+        <div class="lab-output">
+          <div class="output-head">
+            <h2>Your theme</h2>
+            <div class="output-actions">
+              <button class="reset" type="button" data-reset disabled>
+                <span class="material-icons-round" aria-hidden="true">restart_alt</span>Reset
+              </button>
+              <button class="copy" type="button" data-copy="" data-copy-theme aria-label="Copy theme CSS">
+                <span class="material-icons-round" aria-hidden="true">content_copy</span>
+              </button>
+            </div>
+          </div>
+          <div class="code code-dark">
+            <pre><code data-css></code></pre>
+          </div>
+          <p class="note">The tokens' stylesheet sits in a CSS cascade layer, so a plain <code>:root</code> rule always wins.</p>
+        </div>
       </div>
 
       <div class="stage stage-preview" id="lab-stage">
-        <div class="preview-col">
-          <cc-text-input label="Full name" value="John Doe"></cc-text-input>
-          <cc-search-bar placeholder="Search projects"></cc-search-bar>
-          <div class="row">
-            <cc-chip selected>Design</cc-chip>
-            <cc-chip>Engineering</cc-chip>
-            <cc-chip>Research</cc-chip>
+        <div class="preview">
+          <div class="preview-col">
+            <cc-text-input label="Full name" value="John Doe"></cc-text-input>
+            <cc-search-bar placeholder="Search projects"></cc-search-bar>
+            <div class="row">
+              <cc-chip selected>Design</cc-chip>
+              <cc-chip>Engineering</cc-chip>
+              <cc-chip>Research</cc-chip>
+            </div>
+            <cc-radio-group aria-label="Plan" name="plan" value="team">
+              <cc-radio value="solo">Solo</cc-radio>
+              <cc-radio value="team">Team</cc-radio>
+            </cc-radio-group>
+            <div class="row">
+              <cc-switch checked>Notifications</cc-switch>
+              <cc-checkbox checked>Remember me</cc-checkbox>
+            </div>
+            <cc-alert status="info"><span slot="title">Heads up</span>Alerts keep their own status colours.</cc-alert>
+            <div class="row">
+              <cc-button variant="text" color="secondary">Cancel</cc-button>
+              <cc-button variant="outlined">Save draft</cc-button>
+              <cc-button>Publish</cc-button>
+            </div>
           </div>
-          <cc-radio-group aria-label="Plan" name="plan" value="team">
-            <cc-radio value="solo">Solo</cc-radio>
-            <cc-radio value="team">Team</cc-radio>
-          </cc-radio-group>
-          <div class="row">
-            <cc-switch checked>Notifications</cc-switch>
-            <cc-checkbox checked>Remember me</cc-checkbox>
-          </div>
-          <cc-alert status="info"><span slot="title">Heads up</span>Alerts keep their own status colours.</cc-alert>
-          <div class="row">
-            <cc-button variant="text" color="secondary">Cancel</cc-button>
-            <cc-button variant="outlined">Save draft</cc-button>
-            <cc-button>Publish</cc-button>
+          <div class="preview-col">
+            <cc-calendar></cc-calendar>
+            <div role="tablist" aria-label="Views" class="tablist">
+              <cc-tab type="enclosed" selected>Board</cc-tab>
+              <cc-tab type="enclosed">List</cc-tab>
+              <cc-tab type="enclosed">Timeline</cc-tab>
+            </div>
+            <cc-pagination aria-label="Results pages" data-total="80"></cc-pagination>
           </div>
         </div>
-        <div class="preview-col">
-          <cc-calendar></cc-calendar>
-          <div role="tablist" aria-label="Views" class="tablist">
-            <cc-tab type="enclosed" selected>Board</cc-tab>
-            <cc-tab type="enclosed">List</cc-tab>
-            <cc-tab type="enclosed">Timeline</cc-tab>
-          </div>
-          <cc-pagination aria-label="Results pages" data-total="80"></cc-pagination>
-        </div>
-      </div>
-      <div class="lab-output">
-        <h2>Your theme</h2>
-        <div class="code code-dark">
-          <button class="copy" type="button" data-copy="" aria-label="Copy theme CSS"><span class="material-icons-round" aria-hidden="true">content_copy</span></button>
-          <pre><code data-css></code></pre>
-        </div>
-        <p class="note">The tokens' stylesheet sits in a CSS cascade layer, so a plain <code>:root</code> rule always wins.</p>
       </div>
     </div>
 
     <section class="install-theme" aria-labelledby="apply-title">
       <h2 id="apply-title">Apply it</h2>
       <p>Paste the rule into any stylesheet that loads after the components. Scope it to a selector instead of <code>:root</code> to theme one part of a page.</p>
-      <Code code={`.marketing {\n  --cc-accent-main: var(--cc-palette-purple-600);\n  --cc-radius: 12px;\n}`} />
+      <Code lang="css" code={`.marketing {\n  --cc-accent-main: var(--cc-palette-purple-600);\n  --cc-radius: 12px;\n}`} />
     </section>
   </main>
 </Base>
@@ -85,46 +98,110 @@ import { palettes } from '../site';
     margin: 0 auto;
     padding: clamp(2.5rem, 6vw, 4rem) var(--gutter) clamp(4rem, 8vw, 6rem);
   }
+  /* Desktop: the controls and the CSS they produce share one sticky panel, so every change
+     is visible next to the preview. Phones: the panel dissolves (display: contents) into a
+     sticky control bar, the preview, then the CSS. */
   .lab {
     display: grid;
-    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
-    gap: clamp(1.5rem, 3vw, 2.5rem);
+    grid-template-columns: minmax(0, 25rem) minmax(0, 1fr);
+    gap: 2rem;
     align-items: start;
     margin-top: 2rem;
   }
   .lab-panel {
     position: sticky;
-    top: calc(var(--header-h) + 2rem);
+    top: calc(var(--header-h) + 1.5rem);
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 1.75rem;
   }
+  .lab-tools {
+    max-width: none;
+    gap: 1.5rem;
+  }
   .lab-output {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-column: 1 / -1;
     gap: 0.75rem;
-    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
   }
-  .lab-output h2 {
-    font-size: 1.6rem;
+  .output-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
-  .lab-panel .swatches {
-    gap: 0.5rem;
+  .output-head h2 {
+    font-size: 1.125rem;
+    letter-spacing: -0.01em;
   }
-  .lab-panel .swatches button {
-    width: 1.55rem;
-    height: 1.55rem;
+  .output-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    height: 2rem;
+    padding: 0 0.6rem 0 0.45rem;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--green-ink);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .reset .material-icons-round {
+    font-size: 1.1rem;
+  }
+  .reset:hover {
+    background: var(--green-tint);
+  }
+  .reset:disabled {
+    background: transparent;
+    color: var(--ink-2);
+    opacity: 0.5;
+    cursor: default;
+  }
+  /* Declarations that do not fit wrap with a hanging indent, like a formatter would. */
+  .lab-output pre {
+    padding: 1rem;
+    font-size: 0.75rem;
+    white-space: pre-wrap;
+  }
+  .lab-output pre :global(.ln) {
+    display: block;
+    padding-left: 4ch;
+    text-indent: -4ch;
+  }
+  .lab-output pre :global(.val) {
+    white-space: nowrap;
   }
   .note {
     color: var(--ink-2);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
   }
+  /* The calendar is a fixed 308px, so the preview lays itself out from its own width:
+     form beside calendar when both fit, one column otherwise. */
   .stage-preview {
+    container-type: inline-size;
+    padding: clamp(1.5rem, 3vw, 2rem);
+  }
+  .preview {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: 2rem;
-    padding: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  @container (min-width: 38rem) {
+    .preview {
+      grid-template-columns: minmax(0, 1fr) max-content;
+      gap: 1.5rem;
+    }
   }
   .preview-col {
     display: grid;
@@ -153,7 +230,30 @@ import { palettes } from '../site';
       grid-template-columns: minmax(0, 1fr);
     }
     .lab-panel {
-      position: static;
+      display: contents;
+    }
+    .lab-tools {
+      position: sticky;
+      top: var(--header-h);
+      z-index: calc(var(--z-sticky) - 1);
+      width: auto;
+      margin: 0 calc(-1 * var(--gutter));
+      padding: 0.75rem var(--gutter) 1rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+    }
+    /* Preview straight under the controls; the CSS follows it. */
+    .lab-output {
+      order: 1;
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
+  @media (min-width: 36rem) and (max-width: 60rem) {
+    .lab-tools {
+      grid-template-columns: auto minmax(10rem, 1fr);
+      align-items: end;
+      column-gap: 2rem;
     }
   }
 </style>
