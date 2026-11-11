@@ -320,7 +320,19 @@ code {
 
 /* Code blocks */
 
+/* Syntax roles, read by the Shiki theme in src/syntax.ts. Light blocks use the 700 steps,
+   dark blocks the 300 steps; all pass 4.5:1 on their surface. Tags and --cc-* names are green. */
 .code {
+  --sx-bg: transparent;
+  --sx-fg: var(--ink);
+  --sx-comment: var(--cc-palette-gray-600);
+  --sx-punct: var(--cc-palette-gray-600);
+  --sx-keyword: var(--cc-palette-purple-700);
+  --sx-string: var(--cc-palette-orange-700);
+  --sx-const: var(--cc-palette-pink-700);
+  --sx-fn: var(--cc-palette-blue-700);
+  --sx-attr: var(--cc-palette-yellow-700);
+  --sx-tag: var(--green-ink);
   position: relative;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -356,8 +368,23 @@ code {
   background: oklch(0.23 0.025 258 / 0.07);
   color: var(--ink);
 }
+.copy:disabled {
+  background: transparent;
+  color: var(--ink-2);
+  opacity: 0.4;
+  cursor: default;
+}
 
 .code-dark {
+  --sx-fg: var(--cc-palette-gray-100);
+  --sx-comment: var(--cc-palette-gray-400);
+  --sx-punct: var(--cc-palette-gray-400);
+  --sx-keyword: var(--cc-palette-purple-300);
+  --sx-string: var(--cc-palette-orange-300);
+  --sx-const: var(--cc-palette-pink-300);
+  --sx-fn: var(--cc-palette-blue-300);
+  --sx-attr: var(--cc-palette-yellow-300);
+  --sx-tag: var(--cc-palette-green-300);
   border-color: var(--cc-surface-surface-2);
   background: var(--cc-surface-surface-0);
   color: var(--cc-text-high-emphasis);
@@ -399,10 +426,13 @@ code {
   font-size: 0.875rem;
   font-weight: 600;
 }
-.radius-value {
-  font-family: var(--mono);
+.radius-value,
+.control-value {
   font-weight: 400;
   opacity: 0.8;
+}
+.radius-value {
+  font-family: var(--mono);
 }
 .swatches {
   display: flex;

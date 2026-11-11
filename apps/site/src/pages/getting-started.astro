@@ -33,20 +33,20 @@ const sections = [
 
       <h2 id="install">Install</h2>
       <p>The package brings its tokens and <code>lit</code> along as dependencies.</p>
-      <Code code="npm i @codechem/components" />
+      <Code lang="bash" code="npm i @codechem/components" />
 
       <h2 id="fonts">Fonts are included</h2>
       <p>The components bundle Kumbh Sans for text and Material Icons Round for icons. Importing a component registers both fonts, so there is nothing to load.</p>
 
       <h2 id="import">Import components</h2>
       <p>Importing registers the custom elements and adds the design tokens to the page once. Import everything:</p>
-      <Code code="import '@codechem/components';" />
+      <Code lang="js" code="import '@codechem/components';" />
       <p>Or only what you use, to keep the bundle small. Every component has its own entry point, listed on the <a href="/components/">Components</a> page.</p>
-      <Code code={`import '@codechem/components/button.js';\nimport '@codechem/components/text-input.js';`} />
+      <Code lang="js" code={`import '@codechem/components/button.js';\nimport '@codechem/components/text-input.js';`} />
 
       <h2 id="use">Use them</h2>
       <p>Write the tags in your markup like any HTML element. Attributes configure them, and they fire standard DOM events such as <code>change</code> and <code>input</code>.</p>
-      <Code code={usage} />
+      <Code lang="html" code={usage} />
       <div class="stage stage-demo">
         <cc-text-input label="Work email" required></cc-text-input>
         <cc-button>Create account</cc-button>
@@ -64,7 +64,7 @@ const sections = [
 
       <h2 id="icons">Icons</h2>
       <p>Put a Material Icons Round ligature in a component's icon slot. Keep <code>aria-hidden</code> so screen readers skip the icon's name.</p>
-      <Code code={iconUsage} />
+      <Code lang="html" code={iconUsage} />
 
       <nav class="next" aria-label="Next steps">
         <a href="/components/"><span>Next</span>Browse the components</a>
