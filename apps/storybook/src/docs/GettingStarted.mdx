@@ -1,93 +1,118 @@
 import { Meta } from '@storybook/addon-docs/blocks';
-import './docs.css';
 
 <Meta title="Getting started" />
 
-# CodeChem Design System
+# Build with CodeChem
 
-Web components for CodeChem products, built with [Lit](https://lit.dev) and styled with design tokens exported from the CodeChem Figma library. They are standard custom elements (`<cc-button>`, `<cc-dialog>`, …), so they work in plain HTML and in any framework.
+Install the components, connect your application state, and build an interface that shares CodeChem’s design language. These are standard custom elements built with Lit—not React wrappers—so the same tags work across frameworks.
 
-| Package | What it is |
-|---|---|
-| [`@codechem/components`](https://www.npmjs.com/package/@codechem/components) | The `<cc-*>` components |
-| [`@codechem/tokens`](https://www.npmjs.com/package/@codechem/tokens) | Design tokens as CSS custom properties (`--cc-*`). Installed with the components. |
+## Install
 
-## 1. Install
+Use a modern browser and a bundler such as Vite. Start in an existing application:
 
 ```sh
 npm install @codechem/components
 ```
 
-This also installs `@codechem/tokens` and `lit`.
+| Package | What you get |
+|---|---|
+| `@codechem/components` | Registered `cc-*` elements, TypeScript declarations, bundled fonts and editor metadata |
+| `@codechem/tokens` | CSS custom properties for color, spacing and typography; installed with the components |
 
-## 2. Fonts are included
-
-The components bundle **Kumbh Sans** for text and **Material Icons Round** for icons. Importing a component registers both fonts, so there is nothing to load. More in [Icons](?path=/docs/foundations-icons--docs).
-
-## 3. Import the components
+Import only the components you use from your application’s browser entry point:
 
 ```js
-// Every component
-import '@codechem/components';
-
-// Or only the ones you use
+import '@codechem/components/text-input.js';
+import '@codechem/components/checkbox.js';
 import '@codechem/components/button.js';
-import '@codechem/components/dialog.js';
 ```
 
-Importing a component registers its tag and adds the token stylesheet to the page once. This needs a bundler such as Vite or webpack, which React, Vue and Angular setups already have.
+For exploration, `import '@codechem/components'` registers the whole library. Per-component imports make your dependencies explicit. Importing a component also loads the design tokens, Kumbh Sans and Material Icons Round; you do not need a Google Fonts request.
 
-## 4. Use them
+## Make your first form
+
+Add this markup to your page. Custom elements need closing tags, even when they have no content.
 
 ```html
-<cc-text-input label="Project name" required></cc-text-input>
-<cc-checkbox checked>Notify the team</cc-checkbox>
-<cc-button variant="filled">Save</cc-button>
+<form id="project-form">
+  <cc-text-input label="Project name" name="project" required></cc-text-input>
+  <cc-checkbox name="updates" value="email" checked>
+    Email me project updates
+  </cc-checkbox>
+  <cc-button type="submit">Create project</cc-button>
+</form>
+<p id="project-result" role="status"></p>
 ```
 
-Each component's **Docs** page in this Storybook lists its attributes, slots, events and CSS parts. Try them live with the **Controls** panel on any story.
-
-Components send standard DOM events, such as `change` and `input`:
+Attach the listener after the markup exists. Named form-associated controls participate in native validation and `FormData`:
 
 ```js
-document.querySelector('cc-checkbox').addEventListener('change', (event) => {
-  console.log(event.target.checked);
+const form = document.querySelector('#project-form');
+const result = document.querySelector('#project-result');
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const data = new FormData(form);
+  result.textContent = `Created project: ${data.get('project')}`;
+  // Send data to your API here. Never inject form values with innerHTML.
 });
 ```
 
-## Frameworks
+The button defaults to `type="button"`, so the explicit submit type matters. Unchecked checkboxes do not add a form entry. See [Forms and events](?path=/docs/guides-forms-and-events--docs) for state updates, validation and component-specific exceptions.
 
-The tags work the same in every framework. A few need to be told that `cc-*` tags are custom elements:
+## Find the right component
 
-| Framework | Setup |
+| Task | Start here |
 |---|---|
-| React 19+ | None. React passes properties and events to custom elements. |
-| Vue | In the Vue compiler options, set `isCustomElement: (tag) => tag.startsWith('cc-')`. |
-| Angular | Add `CUSTOM_ELEMENTS_SCHEMA` to the `schemas` of the components that use them. |
+| Trigger an action or navigate | [Button](?path=/docs/components-button--docs) · [Link](?path=/docs/components-link--docs) |
+| Collect text or a number | [Text input](?path=/docs/components-text-input--docs) · [Text area](?path=/docs/components-text-area--docs) · [Number input stepper](?path=/docs/components-number-input-stepper--docs) |
+| Select options or toggle a setting | [Checkbox](?path=/docs/components-checkbox--docs) · [Radio](?path=/docs/components-radio--docs) · [Switch](?path=/docs/components-switch--docs) |
+| Explain status or request a decision | [Alert](?path=/docs/components-alert--docs) · [Badge](?path=/docs/components-badge--docs) · [Dialog](?path=/docs/components-dialog--docs) |
+| Browse or filter a collection | [Search bar](?path=/docs/components-search-bar--docs) · [Chip](?path=/docs/components-chip--docs) · [Pagination](?path=/docs/components-pagination--docs) |
 
-## Theming
+Each component’s Docs page starts with a working example and copyable package imports, then explains usage, accessibility and its public API. The individual stories remain available for exploring variants with Controls.
 
-All colours, sizes and spacing come from the `--cc-*` [tokens](?path=/docs/foundations-tokens--docs). The components load them inside `@layer cc-tokens`, so your own CSS overrides them without `!important`:
+## Match your application
+
+The shipped tokens define a **dark theme**. Use the token surfaces behind the components; placing them on a white canvas does not create a light theme.
 
 ```css
-:root {
-  --cc-accent-main: #7753cd;
-  --cc-radius: 8px;
+@import '@codechem/tokens/tokens.css' layer(cc-tokens);
+
+body {
+  margin: 0;
+  background: var(--cc-background);
+  color: var(--cc-text-high-emphasis);
+  font-family: var(--cc-typeface-typeface);
 }
 ```
 
-Use the same tokens in your own CSS so your app matches the components. To get the variables without any component, import `@codechem/tokens/tokens.css`.
+The explicit stylesheet import can establish the page background before JavaScript runs. [Styling and theming](?path=/docs/guides-styling-and-theming--docs) explains scoped overrides, shadow DOM and CSS parts.
+
+## Framework setup
+
+Use the [Framework integration guide](?path=/docs/guides-framework-integration--docs) for React, Vue, Angular, Lit and server-rendered applications. Framework configuration differs; a custom element is not automatically a framework-controlled input.
 
 ## Editor support
 
-`@codechem/components` ships a Custom Elements Manifest (`custom-elements.json`) and VS Code HTML data. For autocomplete and hover docs on `<cc-*>` tags in VS Code, add this to `.vscode/settings.json`:
+For HTML completions in VS Code, add this to `.vscode/settings.json`:
 
 ```json
 {
-  "html.customData": ["./node_modules/@codechem/components/vscode.html-custom-data.json"]
+  "html.customData": [
+    "./node_modules/@codechem/components/vscode.html-custom-data.json"
+  ]
 }
 ```
 
-## Contributing
+TypeScript types are included in each package entry. A Custom Elements Manifest is available at `@codechem/components/custom-elements.json` for other editor integrations.
 
-The source, setup and contribution guide are in the [GitHub repository](https://github.com/codechem/system).
+## If something looks wrong
+
+- **The tag renders nothing:** verify its browser-side import ran. Check `customElements.get('cc-button')` in DevTools.
+- **A boolean will not turn off:** `disabled="false"` still enables a boolean attribute. Remove it or set the property to `false`.
+- **State looks stale:** read the element’s live property (`value`, `checked`, `page`), not its original HTML attribute.
+- **Styles do not reach the input:** the inner control lives in shadow DOM. Use documented tokens or CSS parts, not descendant selectors.
+- **An import is missing:** check the exports of your installed package version; the repository may be ahead of npm.
+
+For bugs and contribution instructions, see the [source repository](https://github.com/codechem/system).

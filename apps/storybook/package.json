@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test:docs": "node --test tests/documentation.test.mjs"
   },
   "dependencies": {
     "@codechem/components": "*",
@@ -14,6 +15,11 @@
     "@storybook/addon-a11y": "^10.6.6",
     "@storybook/addon-docs": "^10.6.6",
     "@storybook/web-components-vite": "^10.6.6",
+    "esbuild": "^0.28.2",
+    "playwright": "^1.65.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remark-gfm": "^4.0.1",
     "storybook": "^10.6.6"
   }
 }

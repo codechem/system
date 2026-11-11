@@ -1,0 +1,126 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Forms and events" />
+
+# Forms and events
+
+The browser owns the DOM; your application owns its data. Treat a component event as a signal to read its current public properties—not as a framework-specific callback or an assumed `event.detail.value` payload.
+
+## Attributes initialize; properties hold live state
+
+Use attributes for initial markup and simple configuration. Use properties to read or update a component after it is running:
+
+```js
+import '@codechem/components/text-input.js';
+import '@codechem/components/checkbox.js';
+
+const field = document.querySelector('cc-text-input');
+field.value = 'Website refresh';
+
+const checkbox = document.querySelector('cc-checkbox');
+checkbox.checked = false;
+// checked="false" would still enable a boolean HTML attribute.
+```
+
+Some properties reflect to attributes, others do not. Do not build application state around `getAttribute('checked')` or `getAttribute('value')`. Assigning a property does not generally emit an input or change event; update your application state in the same operation.
+
+## Read event state from the element
+
+```js
+const field = document.querySelector('cc-text-input');
+field.addEventListener('input', () => {
+  console.log(field.value); // Every edit
+});
+
+const checkbox = document.querySelector('cc-checkbox');
+checkbox.addEventListener('change', () => {
+  console.log(checkbox.checked); // A boolean, not event.detail
+});
+```
+
+| Component | Event | Read |
+|---|---|---|
+| Text input, Text area, Search bar, Number input stepper | `input` / `change` | `element.value` (string) |
+| Checkbox, Switch | `input` / `change` | `element.checked` (boolean) |
+| Radio group | `input` / `change` | `group.value` |
+| Pagination | `change` | `element.page` (one-based) |
+| Filter chip | `change` | `element.selected` |
+| Calendar | `change` after Done | `element.value` (`YYYY-MM-DD`) |
+| Navigation drawer | `select` | `event.detail` (the activated item) |
+| Navigation drawer | `change` | `event.detail.collapsed` |
+
+The calendar’s `input` event signals a draft selection, not a committed value. Use `change` when persisting a date. See individual API pages for exact event semantics.
+
+## Submit a native form
+
+Text input, Text area, Search bar, Number input stepper, Checkbox, Switch and Radio group support form-associated values. Set `name` on each control (on the group for radio options). A submit button must use `type="submit"`.
+
+```html
+<form id="settings">
+  <cc-text-input name="project" label="Project name" required></cc-text-input>
+  <cc-switch name="email" value="enabled">Email notifications</cc-switch>
+  <cc-button type="submit">Save settings</cc-button>
+  <cc-button type="reset" variant="text">Reset</cc-button>
+</form>
+```
+
+```js
+import '@codechem/components/text-input.js';
+import '@codechem/components/switch.js';
+import '@codechem/components/button.js';
+
+const form = document.querySelector('#settings');
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const data = new FormData(form);
+  console.log(data.get('project'));
+  console.log(data.has('email')); // Unchecked switches have no entry
+});
+```
+
+Disabled controls are not submitted. Checkbox and Switch submit their `value` only when checked. Repeated names can produce multiple entries; use `data.getAll(name)` for a group of checkboxes.
+
+The Calendar currently has no public `name` API. Mirror its committed value into a named hidden input when including it in `FormData`. Chips, tabs, pagination and list items do not submit your application’s selection state automatically.
+
+## Validate without replacing native behavior
+
+Use `required` on supported fields and `min`, `max`, `step` on numeric inputs. Text input supports an application-supplied `error` string:
+
+```js
+const field = document.querySelector('cc-text-input');
+field.error = 'That project name is already in use.';
+await field.updateComplete; // Lit updates validity asynchronously
+field.reportValidity();
+
+// Clear an application error when the user corrects it.
+field.addEventListener('input', () => { field.error = ''; });
+```
+
+Not every native HTML input attribute is forwarded. For example, Text input has no public `type`, `pattern` or `maxlength` property. Check the reference instead of assuming parity with `<input>`.
+
+## Handle requests to dismiss or remove
+
+An input chip or list item emits `remove`; it does not remove itself. Remove it from your application’s data and let your renderer update the DOM. In plain JavaScript:
+
+```js
+const chip = document.querySelector('cc-chip[type="input"]');
+chip.addEventListener('remove', () => {
+  chip.remove();
+  // Restore focus to the field or a neighboring chip as appropriate.
+});
+```
+
+Alert uses `cc-close`, which is cancelable. Dialog uses `close`, including Escape dismissal. Synchronize application state when a dialog closes, rather than assuming only your action buttons can close it.
+
+## Wait for registration when needed
+
+If your application loads registration lazily, wait before assigning complex properties:
+
+```js
+await import('@codechem/components/navigation-drawer.js');
+await customElements.whenDefined('cc-navigation-drawer');
+const drawer = document.querySelector('cc-navigation-drawer');
+drawer.items = [{ label: 'Projects', icon: 'folder', href: '/projects' }];
+```
+
+When you need to measure the updated DOM or immediately read form validity after changing properties, await the component’s `updateComplete` promise. Avoid reaching into shadow DOM to patch values; it bypasses the component’s state and validity handling.

@@ -1,0 +1,87 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Styling and theming" />
+
+# Styling and theming
+
+Use tokens for shared decisions and component attributes for supported variants. Reach for CSS parts only when you need a targeted override the public variants cannot express.
+
+## Start with the shipped theme
+
+The current token package ships one dark theme, not a light/dark mode switch. Components use light text and dark surfaces. Set the surrounding page background and text from the same tokens:
+
+```css
+@import '@codechem/tokens/tokens.css' layer(cc-tokens);
+
+body {
+  background: var(--cc-background);
+  color: var(--cc-text-high-emphasis);
+  font-family: var(--cc-typeface-typeface);
+}
+
+.settings-section {
+  display: grid;
+  gap: var(--cc-gap-gap-2);
+  padding: var(--cc-padding-padding-3);
+  border-bottom: 1px solid var(--cc-border-low-contrast);
+}
+```
+
+Components automatically load the tokens in `@layer cc-tokens`. Importing the CSS explicitly can prevent an unstyled page background before the browser registration code runs. The token-only package does not load the bundled component fonts.
+
+## Override the role, not the raw palette
+
+Semantic tokens describe purpose. For example, use `--cc-text-medium-emphasis` for supporting text instead of a specific gray. A theme can then change the semantic decision in one place.
+
+Your unlayered CSS wins over the component-loaded token layer without `!important`:
+
+```css
+:root {
+  --cc-radius: 8px;
+}
+
+/* Change the accent as a family; do not leave hover and focus green. */
+.billing-workspace {
+  --cc-accent-light: var(--cc-palette-purple-300);
+  --cc-accent-main: var(--cc-palette-purple-600);
+  --cc-accent-dark: var(--cc-palette-purple-800);
+  --cc-accent-shade: var(--cc-palette-purple-900);
+  --cc-accent-transparent: color-mix(in srgb, var(--cc-palette-purple-600) 60%, transparent);
+  --cc-accent-contrast: var(--cc-palette-white);
+  --cc-border-focus: var(--cc-palette-purple-300);
+}
+```
+
+Scope overrides to a container when only part of the application needs them. Custom properties inherit through shadow roots. Test foreground, hover, disabled and focus states together; changing one accent token is not a complete theme.
+
+## Understand the shadow boundary
+
+Page selectors cannot directly style a component’s internal controls:
+
+```css
+/* Does not reach the button inside shadow DOM. */
+cc-button button { border-radius: 8px; }
+
+/* Preferred: inherit the supported design token. */
+cc-button { --cc-radius: 8px; }
+
+/* Targeted exception: use a documented part. */
+cc-button::part(button) { min-inline-size: 10rem; }
+```
+
+Slots contain your own light-DOM content. You can style that content normally, but the component may intentionally size slotted icons. See [Icons](?path=/docs/foundations-icons--docs) for font and SVG examples.
+
+## Keep application layout outside components
+
+Components do not define your page grid, spacing between form fields or responsive breakpoints. Use a wrapper for layout, allow long labels to wrap, and test narrow widths. Give the Calendar enough horizontal room; use a scrollable example stage instead of squeezing its date grid.
+
+Avoid broad selectors such as `* { color: ... }` and undocumented internal selectors. They make upgrades brittle and can erase meaningful status colors.
+
+## Check the result
+
+- Body text needs at least 4.5:1 contrast against its actual background; large text needs 3:1.
+- Keyboard focus must remain visible on every interactive control.
+- Do not infer a theme system from a handful of changed colors. A light theme would need a complete surface, text, border and state palette.
+- The current `--cc-status-*-transparent` values resolve to white. Avoid those for tinted backgrounds; inspect the [Tokens reference](?path=/docs/foundations-tokens--docs) before adopting a token.
+
+See [Tokens](?path=/docs/foundations-tokens--docs) for the generated color, typography and spacing reference and each component page for its available CSS parts.

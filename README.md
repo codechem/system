@@ -18,7 +18,7 @@ This is an npm workspaces monorepo:
 |---|---|---|
 | `packages/tokens` | `@codechem/tokens` | Figma Variables as JSON, compiled to CSS custom properties (`--cc-*`) with Style Dictionary |
 | `packages/components` | `@codechem/components` | The Lit web components: `<cc-button>`, `<cc-alert>`, `<cc-avatar>`, `<cc-badge>`, `<cc-checkbox>`, `<cc-link>`, `<cc-radio-group>` with `<cc-radio>`, `<cc-tooltip>`, `<cc-textarea>`, `<cc-text-input>`, `<cc-search-bar>`, `<cc-number-input-stepper>`, `<cc-list-item>`, `<cc-chip>`, `<cc-pagination>`, `<cc-switch>`, `<cc-tab>`, `<cc-accordion>`, `<cc-dialog>`, `<cc-calendar>`, `<cc-navigation-drawer>` |
-| `apps/storybook` | `@codechem/storybook` | Storybook site to browse, try and document the components, with Getting started, Tokens and Icons pages |
+| `apps/storybook` | `@codechem/storybook` | Developer documentation: installation, framework integration, forms, theming, component usage and API references, plus interactive development stories |
 
 Both packages are published to npm: [`@codechem/components`](https://www.npmjs.com/package/@codechem/components) and [`@codechem/tokens`](https://www.npmjs.com/package/@codechem/tokens). Each has its own README, which is what npm shows.
 
@@ -72,7 +72,17 @@ This builds the tokens, generates the components' Custom Elements Manifest (whic
 
 Component and story changes reload live. Restart the command after changing tokens, or after adding or renaming a property, slot or event, so the Controls and Docs tables pick it up.
 
-The Getting started, Tokens and Icons pages are MDX files in `apps/storybook/src/docs/`. The Tokens page reads the built `tokens.css`, so it updates itself when the tokens change.
+The guides are MDX files in `apps/storybook/src/docs/`. Component Docs pages share `ComponentDocs.tsx` and reviewed consumer guidance in `component-guides.ts`; their API references read the manifest and exclude internal Lit state. Add a guide entry when introducing a component. Keep examples limited to public package exports, and explain which state the application must manage. The Tokens page reads the built `tokens.css`, so it updates itself when the tokens change.
+
+To check the documentation in Chromium, including every documentation route at desktop and phone widths:
+
+```sh
+npx playwright install chromium  # once per machine
+npm run build-storybook
+npm run test:docs -w @codechem/storybook
+```
+
+The browser suite serves the production build on an ephemeral localhost port and shuts it down afterward. It checks Markdown rendering, copy buttons, documentation links, package imports, API filtering, live examples, native form submission, theme tokens, navigation contrast and page overflow. It also server-renders the copied React example without browser registration. To check an already running development server instead, set `STORYBOOK_URL=http://localhost:6006` on the test command. Fenced Markdown uses a shared copyable renderer; GFM tables are enabled centrally in `.storybook/main.ts`.
 
 ### Tests
 

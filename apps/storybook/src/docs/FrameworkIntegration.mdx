@@ -1,0 +1,165 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Guides/Framework integration" />
+
+# Framework integration
+
+Use the same elements in every framework. Import the relevant package entries once in browser code, pass values through properties, and subscribe to the DOM events listed on each component page.
+
+## React 19 and later
+
+React 19 supports custom-element properties. For event subscriptions, a ref and `addEventListener` make the event name and cleanup explicit, including custom events such as `cc-close`.
+
+```jsx
+import { useEffect, useRef, useState } from 'react';
+
+export function NotificationSetting() {
+  const ref = useRef(null);
+  const [enabled, setEnabled] = useState(true);
+
+  useEffect(() => {
+    const control = ref.current;
+    let disposed = false;
+    const onChange = () => setEnabled(control.checked);
+    // Effects do not run during server rendering. Register in the browser.
+    import('@codechem/components/switch.js').then(() => {
+      if (!disposed) control.addEventListener('change', onChange);
+    });
+    return () => {
+      disposed = true;
+      control.removeEventListener('change', onChange);
+    };
+  }, []);
+
+  return (
+    <>
+      <cc-switch ref={ref} checked={enabled}>Email notifications</cc-switch>
+      <p>{enabled ? 'Email updates are on.' : 'Email updates are off.'}</p>
+    </>
+  );
+}
+```
+
+For React 18 and earlier, use a ref to assign custom-element properties as well as subscribe to events; do not assume a boolean JSX prop is serialized correctly. For controlled values, update the element property when application state changes.
+
+### TypeScript and JSX
+
+The package defines `HTMLElementTagNameMap`, but does not ship React-specific JSX declarations. Add only the tags you use to a `.d.ts` file included by your application. For example, with React 19 types:
+
+```ts
+import type * as React from 'react';
+import type { CcSwitch } from '@codechem/components/switch.js';
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'cc-switch': React.DetailedHTMLProps<
+        React.HTMLAttributes<CcSwitch>, CcSwitch
+      > & { checked?: boolean; disabled?: boolean };
+    }
+  }
+}
+```
+
+## Vue 3 with Vite
+
+Tell the Vue compiler that `cc-*` tags are custom elements. This is a build-time option, not just a runtime app setting:
+
+```js
+// vite.config.js
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+
+export default defineConfig({
+  plugins: [vue({
+    template: {
+      compilerOptions: {
+        isCustomElement: (tag) => tag.startsWith('cc-'),
+      },
+    },
+  })],
+});
+```
+
+Bind properties explicitly with `.prop`. Native `v-model` conventions are not the public contract of these elements:
+
+```html
+<script setup>
+import { ref } from 'vue';
+import '@codechem/components/text-input.js';
+
+const project = ref('Website refresh');
+</script>
+
+<template>
+  <cc-text-input
+    label="Project name"
+    :value.prop="project"
+    @input="project = $event.target.value"
+  ></cc-text-input>
+  <p>{{ project }}</p>
+</template>
+```
+
+## Angular
+
+Add `CUSTOM_ELEMENTS_SCHEMA` to the component or module that uses the tags. Import registration code in your browser entry point, and use property binding for values and booleans.
+
+```ts
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import '@codechem/components/checkbox.js';
+
+@Component({
+  selector: 'app-project-settings',
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `
+    <cc-checkbox
+      [checked]="notify"
+      (change)="notify = $any($event.target).checked"
+    >Email me updates</cc-checkbox>
+  `,
+})
+export class ProjectSettings {
+  notify = true;
+}
+```
+
+Angular reactive forms do not automatically gain a `ControlValueAccessor` from this schema. Use explicit bindings or write an application adapter for your form library.
+
+## Lit
+
+Use `.property` bindings for JavaScript values, `?attribute` for booleans and `@event` for DOM event listeners:
+
+```js
+import { html } from 'lit';
+import '@codechem/components/pagination.js';
+
+const renderPages = (page, total, onChange) => html`
+  <cc-pagination
+    .page=${page}
+    .total=${total}
+    .pageSize=${10}
+    @change=${(event) => onChange(event.currentTarget.page)}
+  ></cc-pagination>
+`;
+```
+
+## SSR, Next.js and Astro
+
+The package does not provide server-rendered shadow roots or framework hydration adapters. Keep registration and event wiring in a browser entry point, as in the React effect above; do not instantiate component classes or access their DOM during a server render. Lit can supply a server-side registry shim, but importing a registration module on the server is not the same as rendering an interactive component. In Next.js, use a client boundary and load registration from a client effect or an SSR-disabled integration. Merely adding `'use client'` does not prevent a module from being evaluated during prerendering.
+
+In Astro, import registrations from a processed `<script>` and use presence-based boolean attributes:
+
+```astro
+---
+const disabled = false;
+---
+<cc-button disabled={disabled || undefined}>Save changes</cc-button>
+
+<script>
+  import '@codechem/components/button.js';
+</script>
+```
+
+Do not serialize arrays or objects into attributes. Assign properties after registration for components such as the Navigation drawer. Ensure your server HTML and client state agree to avoid a visible state change on startup.

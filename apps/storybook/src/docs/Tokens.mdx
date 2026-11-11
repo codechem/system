@@ -42,39 +42,47 @@ To change a token, set it in your own CSS. The components load the tokens inside
 
 ### Semantic
 
+<div className="cc-palette-scroll" role="region" aria-label="Semantic colors" tabIndex={0}>
 <ColorPalette>
   {semanticColors.map((g) => (
     <ColorItem key={g.title} title={g.title} subtitle={g.subtitle} colors={g.colors} />
   ))}
 </ColorPalette>
+</div>
 
 ### Alert
 
 Used by `<cc-alert>`, one set per status.
 
+<div className="cc-palette-scroll" role="region" aria-label="Alert colors" tabIndex={0}>
 <ColorPalette>
   {alertColors.map((g) => (
     <ColorItem key={g.title} title={g.title} subtitle={g.subtitle} colors={g.colors} />
   ))}
 </ColorPalette>
+</div>
 
 ### Status
 
 Coloured labels such as `<cc-badge color="…">`, one set per hue.
 
+<div className="cc-palette-scroll" role="region" aria-label="Status colors" tabIndex={0}>
 <ColorPalette>
   {statusColors.map((g) => (
     <ColorItem key={g.title} title={g.title} subtitle={g.subtitle} colors={g.colors} />
   ))}
 </ColorPalette>
+</div>
 
 ### Palette
 
+<div className="cc-palette-scroll" role="region" aria-label="Palette colors" tabIndex={0}>
 <ColorPalette>
   {paletteColors.map((g) => (
     <ColorItem key={g.title} title={g.title} subtitle={g.subtitle} colors={g.colors} />
   ))}
 </ColorPalette>
+</div>
 
 ## Typography
 
