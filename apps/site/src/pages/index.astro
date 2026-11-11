@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { catalog, entries } from '../catalog';
-import { palettes, version } from '../site';
+import { palettes, storybook, version } from '../site';
 
 const snippets: Record<string, string> = {
   HTML: `<!-- main.js: import '@codechem/components'; -->
@@ -76,6 +76,7 @@ const roles = [
         <div class="hero-actions">
           <a class="btn btn-primary" href="/getting-started/">Get started</a>
           <a class="btn" href="/components/">Browse components</a>
+          <a class="btn" href={storybook} rel="noopener">Open Storybook</a>
         </div>
         <button class="install" type="button" data-copy="npm i @codechem/components" aria-label="Copy install command">
           <span class="prompt" aria-hidden="true">$</span><code>npm i @codechem/components</code>
