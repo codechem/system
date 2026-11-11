@@ -17,3 +17,4 @@ export { CcPagination } from './pagination/cc-pagination.js';
 export { CcSwitch } from './switch/cc-switch.js';
 export { CcTab } from './tab/cc-tab.js';
 export { CcCalendar } from './calendar/cc-calendar.js';
+export { CcNavigationDrawer } from './navigation-drawer/cc-navigation-drawer.js';

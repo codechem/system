@@ -15,7 +15,12 @@ type Args = {
 };
 
 const link = (a: Args) =>
-  html`<cc-link href=${a.href || nothing} size=${a.size} ?disabled=${a.disabled} ?hide-icon=${a.hideIcon}
+  html`<cc-link
+    href=${a.href || nothing}
+    size=${a.size}
+    ?disabled=${a.disabled}
+    ?hide-icon=${a.hideIcon}
+    @click=${(event: Event) => event.preventDefault()}
     >${a.leadingIcon ? unsafeHTML(add) : nothing}${a.label}</cc-link
   >`;
 

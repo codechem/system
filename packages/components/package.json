@@ -103,6 +103,10 @@
       "types": "./dist/calendar/cc-calendar.d.ts",
       "default": "./dist/calendar/cc-calendar.js"
     },
+    "./navigation-drawer.js": {
+      "types": "./dist/navigation-drawer/cc-navigation-drawer.d.ts",
+      "default": "./dist/navigation-drawer/cc-navigation-drawer.js"
+    },
     "./custom-elements.json": "./custom-elements.json",
     "./package.json": "./package.json"
   },
@@ -114,7 +118,7 @@
   ],
   "scripts": {
     "analyze": "cem analyze",
-    "build": "cem analyze && tsc -p tsconfig.build.json",
+    "build": "cem analyze && tsc -p tsconfig.build.json && node scripts/copy-fonts.mjs",
     "test": "vitest run"
   },
   "dependencies": {
