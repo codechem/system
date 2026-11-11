@@ -206,6 +206,19 @@ After CI passes on `main`, `.github/workflows/deploy-storybook.yml` calls Dokplo
 
 The workflow fails if the secret is missing or Dokploy doesn't start a deploy, and prints Dokploy's reply, such as "Branch Not Match".
 
+## Deploying the front page
+
+The Astro front page in `apps/site` uses a separate Dokploy application. After CI passes for a push to `main`, `.github/workflows/deploy-site.yml` calls that application's deploy webhook. You can also run **Deploy site** manually from the Actions tab.
+
+1. Configure the Dokploy application to build the `main` branch using **Dockerfile** `apps/site/Dockerfile`, with the **repository root** as its build context. Route the domain to container port **8080**.
+2. Optionally set the `PUBLIC_STORYBOOK_URL` build argument to your public Storybook URL; it is embedded when the site is built.
+3. Turn on **Auto Deploy** and copy the application's webhook URL from the Deployments tab.
+4. In GitHub, create the `site` environment (Settings → Environments) and add its webhook URL as the environment secret `DOKPLOY_WEBHOOK_URL`.
+
+Use the front-page application's webhook, not Storybook's. The `site` environment secret overrides any repository-level `DOKPLOY_WEBHOOK_URL`; without it, the workflow could call the existing Storybook webhook instead. Storybook continues to use its own workflow and environment independently.
+
+Dokploy runs the build defined in `apps/site/Dockerfile`: `npm run build` followed by `npm run build -w @codechem/site`, then serves `apps/site/dist` with nginx. The workflow fails if the webhook secret is missing or Dokploy returns anything other than HTTP 200.
+
 ## Editor support (VS Code)
 
 `npm run analyze -w @codechem/components` (also part of `npm run build`) generates `packages/components/vscode.html-custom-data.json`. To get autocomplete and hover docs for `<cc-*>` tags and their attributes in HTML files, add it to your workspace `.vscode/settings.json`. That file is gitignored, so it stays on your machine:
