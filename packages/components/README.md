@@ -16,18 +16,9 @@ npm install @codechem/components
 
 This also installs [`@codechem/tokens`](https://www.npmjs.com/package/@codechem/tokens), the design tokens the components are styled with, and `lit`.
 
-## Load the fonts
+## Fonts
 
-The components use two Google Fonts that are not bundled: **Kumbh Sans** for text and **Material Icons Round** for icons. Add them to your page's `<head>`:
-
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:YOPQ,wght@40..300,100..900&display=swap" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" />
-```
-
-Without the icon font, icons show up as their names, such as "check_box".
+The components bundle **Kumbh Sans** for text and **Material Icons Round** for icons. They register both fonts when you import a component, so no `<link>` tags are needed. The font files are licensed under the SIL Open Font License (Kumbh Sans) and the Apache License 2.0 (Material Icons); the licence texts are in `dist/fonts/`.
 
 ## Import
 

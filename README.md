@@ -15,7 +15,7 @@ This is an npm workspaces monorepo:
 | Path | Package | What it is |
 |---|---|---|
 | `packages/tokens` | `@codechem/tokens` | Figma Variables as JSON, compiled to CSS custom properties (`--cc-*`) with Style Dictionary |
-| `packages/components` | `@codechem/components` | The Lit web components: `<cc-button>`, `<cc-alert>`, `<cc-badge>`, `<cc-checkbox>`, `<cc-link>`, `<cc-radio-group>` with `<cc-radio>`, `<cc-tooltip>`, `<cc-textarea>`, `<cc-text-input>`, `<cc-search-bar>`, `<cc-number-input-stepper>`, `<cc-list-item>`, `<cc-chip>`, `<cc-pagination>`, `<cc-switch>`, `<cc-tab>`, `<cc-accordion>`, `<cc-dialog>`, `<cc-calendar>` |
+| `packages/components` | `@codechem/components` | The Lit web components: `<cc-button>`, `<cc-alert>`, `<cc-badge>`, `<cc-checkbox>`, `<cc-link>`, `<cc-radio-group>` with `<cc-radio>`, `<cc-tooltip>`, `<cc-textarea>`, `<cc-text-input>`, `<cc-search-bar>`, `<cc-number-input-stepper>`, `<cc-list-item>`, `<cc-chip>`, `<cc-pagination>`, `<cc-switch>`, `<cc-tab>`, `<cc-accordion>`, `<cc-dialog>`, `<cc-calendar>`, `<cc-navigation-drawer>` |
 | `apps/storybook` | `@codechem/storybook` | Storybook site to browse, try and document the components, with Getting started, Tokens and Icons pages |
 
 Both packages are published to npm: [`@codechem/components`](https://www.npmjs.com/package/@codechem/components) and [`@codechem/tokens`](https://www.npmjs.com/package/@codechem/tokens). Each has its own README, which is what npm shows.
@@ -129,6 +129,7 @@ packages/
       accordion/
       dialog/
       calendar/
+      navigation-drawer/
       index.ts      Exports every component
 apps/
   storybook/
@@ -169,14 +170,7 @@ Search for a token name in `packages/tokens/dist/tokens.css` to see its final va
 npm install @codechem/components
 ```
 
-This also installs `@codechem/tokens`. The components read their styles from the token CSS variables and draw their icons with the [Material Icons Round](https://fonts.google.com/icons?icon.set=Material+Icons&icon.style=Rounded) font. An app loads both fonts once, then imports the components:
-
-```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:YOPQ,wght@40..300,100..900&display=swap" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" />
-```
-
-Without the icon font, icons show up as their names (e.g. "check_box"). The same font gives you every other Material icon for slots, such as a button icon: `<span slot="leading" class="material-icons-round" aria-hidden="true">add</span>`. Keep `aria-hidden` so screen readers don't read the icon name as part of the label.
+This also installs `@codechem/tokens`. The components read their styles from the token CSS variables. The components bundle the **Kumbh Sans** text font and the **[Material Icons Round](https://fonts.google.com/icons?icon.set=Material+Icons&icon.style=Rounded)** icon font, so there is nothing to load. The same icon font gives you every other Material icon for slots, such as a button icon: `<span slot="leading" class="material-icons-round" aria-hidden="true">add</span>`. Keep `aria-hidden` so screen readers don't read the icon name as part of the label.
 
 ```js
 import '@codechem/components';           // every component

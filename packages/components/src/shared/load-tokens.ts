@@ -1,4 +1,5 @@
 import { css } from '@codechem/tokens/sheet.js';
+import './load-fonts.js';
 
 const key = Symbol.for('@codechem/tokens/loaded');
 const global = globalThis as unknown as Record<symbol, boolean>;
