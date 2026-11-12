@@ -195,19 +195,36 @@ Importing a component also loads the tokens. This needs a bundler such as Vite o
 
 ## Releasing to npm
 
-Both packages are released together with the same version. Push a version tag:
+Each package is released on its own, with its own version. The tag name says which one:
 
 ```sh
-git tag v0.1.0 && git push origin v0.1.0
+git tag tokens-v0.2.0 && git push origin tokens-v0.2.0
+git tag components-v0.3.1 && git push origin components-v0.3.1
 ```
 
-The `publish` job in `.github/workflows/release.yml` runs after the tests pass. It sets both packages to the tag's version and publishes them with provenance. Stable versions publish with `--tag latest`; prereleases such as `v1.0.0-beta.1` publish with `--tag next`, leaving the default stable install unchanged. Install a prerelease with `npm install @codechem/components@next` or select an exact version. GitHub Release notes remain stable-only. The full setup is in `docs/superpowers/2026-11-09-ci-cd.md`.
+The `publish` job in `.github/workflows/release.yml` runs after the tests pass and publishes only the package named in the tag, with provenance. Stable versions publish with `--tag latest`; prereleases such as `tokens-v1.0.0-beta.1` publish with `--tag next`. To find the next version, look at the last tag (`git describe --tags --match 'tokens-v*'`) and what changed since (`git diff --stat <tag> HEAD -- packages/tokens`).
+
+Choosing the version (below 1.0.0 a breaking change bumps the minor):
+
+| Change | Bump |
+|---|---|
+| Token renamed or removed; component attribute, slot, event or part removed or renamed | major |
+| New token or component; new option on a component | minor |
+| Token value tweak, bugfix | patch |
+
+Rules the pipeline enforces:
+
+- A tokens release fails if a `--cc-*` token disappeared from the last published version without a breaking bump.
+- Components publishes with `@codechem/tokens` pinned to `^<latest published tokens>` (the repo keeps `*` for workspace linking), and fails if `packages/tokens` changed since the last `tokens-v*` tag. Release tokens first, then components.
+- After a release, bump the pinned versions in `apps/site/package.json` (both packages, together, to avoid two copies of tokens).
+
+The full setup is in `docs/superpowers/2026-11-09-ci-cd.md`; the per-package design is in `docs/superpowers/2026-11-12-independent-package-releases.md`.
 
 ### Automatic GitHub release notes
 
-After **both npm packages publish successfully**, the `release` job creates a GitHub Release for the stable `vMAJOR.MINOR.PATCH` tag. It uses the workflow's built-in `GITHUB_TOKEN` (passed to GitHub CLI as `GH_TOKEN`), so no additional secret is needed.
+After **both npm packages publish successfully**, the `release` job creates a GitHub Release for the stable `tokens-vMAJOR.MINOR.PATCH` or `components-vMAJOR.MINOR.PATCH` tag. It uses the workflow's built-in `GITHUB_TOKEN` (passed to GitHub CLI as `GH_TOKEN`), so no additional secret is needed.
 
-Notes cover **all commits**, including direct commits to `main`, since the nearest preceding stable version tag reachable in that release's Git history. Tags on unrelated branches, prerelease tags, unprefixed tags, and aliases at the release commit are not used as baselines. The first release includes all reachable history.
+Notes cover **all commits**, including direct commits to `main`, since the nearest preceding stable tag of the same package (legacy unprefixed `v*` tags count for both) reachable, limited to commits touching `packages/<package>`; the tag is chosen from those reachable in that release's Git history. Tags on unrelated branches, prerelease tags, unprefixed tags, and aliases at the release commit are not used as baselines. The first release includes all reachable history.
 
 Use descriptive conventional commit messages to make the notes useful:
 

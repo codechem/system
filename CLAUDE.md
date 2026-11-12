@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-CodeChem design system: framework-agnostic Lit web components (`<cc-*>`) styled by `--cc-*` CSS custom properties exported from Figma Variables. npm workspaces monorepo (Node ^22.12 / 24 / 26, see `.nvmrc`). Both published packages share one version.
+CodeChem design system: framework-agnostic Lit web components (`<cc-*>`) styled by `--cc-*` CSS custom properties exported from Figma Variables. npm workspaces monorepo (Node ^22.12 / 24 / 26, see `.nvmrc`). The two published packages are versioned and released independently.
 
 - `packages/tokens` (`@codechem/tokens`): Figma Variables JSON in `src/` → Style Dictionary → `dist/tokens.css` + `dist/tokens-sheet.js` (the CSS wrapped in `@layer cc-tokens`, as a string).
 - `packages/components` (`@codechem/components`): the Lit components.
@@ -44,7 +44,7 @@ Each component lives in `packages/components/src/<name>/` as `cc-<name>.ts`, `cc
 
 ## Release & CI
 
-- Push a plain `vX.Y.Z` tag → `.github/workflows/release.yml` runs tests, sets both packages to the tag version, publishes to npm with provenance, then creates a GitHub Release (`scripts/release-notes.mjs`, `create-release.mjs`). Do not use prerelease tags: they would publish as `latest`.
+- Push `tokens-vX.Y.Z` or `components-vX.Y.Z` → `.github/workflows/release.yml` runs tests, sets only that package's version, publishes it to npm with provenance, then creates a GitHub Release (`scripts/release-notes.mjs`, `create-release.mjs`). Prerelease versions publish under the `next` dist-tag. Release tokens before components; components is published with the tokens dependency pinned to `^<latest published tokens>`, and a tokens release fails if `--cc-*` tokens were removed without a breaking bump (see README).
 - `deploy-site.yml` triggers a Dokploy webhook after CI passes on `main`; `deploy-storybook.yml` publishes Storybook. Because the site pins published package versions, site changes that need new component code require a release plus a version bump in `apps/site/package.json`.
 
 ## Project conventions

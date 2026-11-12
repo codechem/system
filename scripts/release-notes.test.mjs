@@ -181,3 +181,25 @@ test('links recognizable PR references without converting issues or code numbers
   assert.ok(!result.includes('/pull/456'));
   assert.ok(result.includes('[#789](https://github.com/codechem/system/pull/789)'));
 });
+
+test('package tags use their own baseline and only list commits touching that package', (t) => {
+  const { cwd, git, commit, notes } = fixture(t);
+  const touch = (dir, message) => {
+    execFileSync('mkdir', ['-p', join(cwd, 'packages', dir)]);
+    writeFileSync(join(cwd, 'packages', dir, 'f.txt'), message);
+    git('add', '.');
+    git('commit', '-q', '-m', message);
+  };
+  commit('root');
+  touch('tokens', 'feat: tokens one');
+  git('tag', 'tokens-v0.1.0');
+  touch('components', 'feat: components one');
+  git('tag', 'components-v0.1.0');
+  touch('tokens', 'fix: tokens two');
+  touch('components', 'fix: components two');
+  git('tag', 'tokens-v0.1.1');
+  const result = notes('tokens-v0.1.1');
+  assert.ok(result.includes('/compare/tokens-v0.1.0...tokens-v0.1.1'));
+  assert.ok(result.includes('tokens two'));
+  assert.ok(!result.includes('components'));
+});

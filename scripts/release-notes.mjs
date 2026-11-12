@@ -3,11 +3,15 @@ import { writeFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 import { pathToFileURL } from 'node:url';
 
-const stableTag = /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
+const stableTag = /^(?:(tokens|components)-)?v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 const categories = ['Breaking changes', 'Features', 'Fixes', 'Documentation', 'Maintenance', 'Other changes'];
 
 export function isStableReleaseTag(tag) {
   return typeof tag === 'string' && stableTag.test(tag) && !/[\r\n]/.test(tag);
+}
+
+export function packageOf(tag) {
+  return stableTag.exec(tag)?.[1];
 }
 
 export function validateReleaseInput(tag, repository) {
@@ -43,8 +47,10 @@ export function generateNotes({ cwd, tag, repository }) {
       }
     }
   }
+  const pkg = packageOf(tag);
   const candidates = [];
   for (const name of git('tag', '--merged', target).split('\n').filter(isStableReleaseTag)) {
+    if (packageOf(name) && packageOf(name) !== pkg) continue;
     const sha = git('rev-parse', '--verify', `refs/tags/${name}^{commit}`);
     if (sha === target) continue;
     candidates.push({ name, distance: distances.get(sha) });
@@ -52,7 +58,7 @@ export function generateNotes({ cwd, tag, repository }) {
   candidates.sort((a, b) => a.distance - b.distance || a.name.localeCompare(b.name, 'en'));
   const previous = candidates[0]?.name;
   const range = previous ? `refs/tags/${previous}..${target}` : target;
-  const shas = git('rev-list', '--reverse', range).split('\n').filter(Boolean);
+  const shas = git('rev-list', '--reverse', range, ...(pkg ? ['--', `packages/${pkg}`] : [])).split('\n').filter(Boolean);
   const url = `https://github.com/${repository}`;
   const sections = new Map(categories.map((category) => [category, []]));
   const authors = new Set();
