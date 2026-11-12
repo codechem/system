@@ -29,4 +29,15 @@ describe('bundled fonts', () => {
     icon.remove();
     expect(width).toBeCloseTo(24, 0);
   });
+
+  it('styles the .material-icons-round class used in icon slots', async () => {
+    await document.fonts.load('24px "Material Icons Round"');
+    const icon = document.createElement('span');
+    icon.className = 'material-icons-round';
+    icon.textContent = 'add';
+    document.body.append(icon);
+    const width = icon.getBoundingClientRect().width;
+    icon.remove();
+    expect(width).toBeCloseTo(24, 0);
+  });
 });

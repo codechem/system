@@ -50,6 +50,7 @@ export const catalog: Group[] = [
         demo: `<cc-chip selected>Remote</cc-chip>
           <cc-chip>Full time</cc-chip>
           <cc-chip>Contract</cc-chip>
+          <div style="flex-basis: 100%; height: 0"></div>
           <cc-chip type="input" removable>TypeScript</cc-chip>`,
       },
     ],

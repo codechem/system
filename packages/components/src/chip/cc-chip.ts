@@ -10,7 +10,7 @@ import '../shared/load-tokens.js';
  * @slot trailing - Icon after the label (filter chips)
  * @slot avatar - Avatar before the label (input chips). The chip becomes pill-shaped.
  * @fires change - When the user toggles the chip
- * @fires remove - When the user clicks the close button or presses Delete or Backspace (input chips with `removable`). The chip does not remove itself.
+ * @fires remove - When the user clicks the close button or presses Delete or Backspace (input chips with `removable`). Cancelable: the chip removes itself from the DOM unless `preventDefault()` is called.
  * @csspart chip - The chip container
  * @csspart button - The inner native button that toggles the chip
  * @csspart close - The close button
@@ -103,7 +103,7 @@ export class CcChip extends LitElement {
 
   /** @internal */
   private handleRemove() {
-    this.dispatchEvent(new Event('remove', { bubbles: true }));
+    if (this.dispatchEvent(new Event('remove', { bubbles: true, cancelable: true }))) this.remove();
   }
 
   /** @internal */

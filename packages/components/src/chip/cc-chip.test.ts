@@ -210,6 +210,15 @@ describe('cc-chip', () => {
       expect(el.selected).toBe(false);
     });
 
+    it('removes itself from the DOM, unless the remove event is cancelled', async () => {
+      const el = await render('<cc-chip type="input" removable>Label</cc-chip>');
+      el.addEventListener('remove', (e) => e.preventDefault(), { once: true });
+      await page.getByRole('button', { name: 'Remove Label' }).click();
+      expect(el.isConnected).toBe(true);
+      await page.getByRole('button', { name: 'Remove Label' }).click();
+      expect(el.isConnected).toBe(false);
+    });
+
     it.each(['Delete', 'Backspace'])('fires remove on %s', async (key) => {
       const el = await render('<cc-chip type="input" removable>Label</cc-chip>');
       const onRemove = vi.fn();

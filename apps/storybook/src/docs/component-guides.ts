@@ -121,7 +121,7 @@ export const guides: Record<string, ComponentGuide> = {
     summary: 'Toggle a filter or represent a removable selection.',
     usage: [
       'Use type="filter" for toggled filters; the component updates selected and emits change.',
-      'Use type="input" removable for selected values. The remove event is a request: your application must remove the chip or update its data.',
+      'Use type="input" removable for selected values. The chip removes itself when the user removes it; remove is cancelable, so call preventDefault() to keep it, and update your own data in the listener.',
       'Use the avatar slot for an input chip avatar; use leading or trailing for decorative icons. A selected filter shows a check instead of its leading icon.',
     ],
     accessibility: [
@@ -130,11 +130,7 @@ export const guides: Record<string, ComponentGuide> = {
     ],
     markup: '<cc-chip type="filter">Assigned to me</cc-chip>\n<cc-chip type="input" removable>Design team</cc-chip>',
     javascript:
-      "const chip = document.querySelector('cc-chip[type=\"input\"]');\nchip.addEventListener('remove', () => chip.remove());",
-    setup(root) {
-      const chip = root.querySelector('cc-chip[type="input"]');
-      chip?.addEventListener('remove', () => chip.remove());
-    },
+      "const chip = document.querySelector('cc-chip[type=\"input\"]');\nchip.addEventListener('remove', () => console.log('removed', chip.textContent));",
     related: ['Badge', 'Text input'],
   },
   'cc-dialog': {
@@ -188,7 +184,7 @@ export const guides: Record<string, ComponentGuide> = {
     summary: 'Display a labeled row with optional supporting text and selection.',
     usage: [
       'Put items in a container with role="list". Set label and supporting-text rather than passing arbitrary default-slot content.',
-      'The remove button is visible by default. Add hide-remove-button for a read-only list. The remove event does not automatically remove the item.',
+      'The remove button is visible by default. Add hide-remove-button for a read-only list. The item removes itself when the remove button is clicked; remove is cancelable, so call preventDefault() to keep it.',
       'Use leading="checkbox" for selection and read selected after change. Use leading="icon" and icon for a decorative Material icon.',
     ],
     accessibility: [

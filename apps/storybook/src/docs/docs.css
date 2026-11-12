@@ -160,7 +160,7 @@ body {
   gap: 16px;
   overflow-x: auto;
 }
-.cc-example-controls > :is(cc-text-input, cc-textarea, cc-search-bar, div[role='list']) {
+.cc-example-controls > :is(cc-text-input, cc-textarea, cc-search-bar, cc-accordion, div[role='list']) {
   width: 100%;
   max-width: 420px;
 }
