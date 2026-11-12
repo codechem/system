@@ -17,6 +17,7 @@ const preview: Preview = {
     docs: {
       page: ComponentDocs,
       theme: documentationTheme,
+      codePanel: true,
       components: { code: MarkdownCode, pre: MarkdownPre },
     },
     options: {
