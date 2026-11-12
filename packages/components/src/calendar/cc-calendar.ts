@@ -1,4 +1,4 @@
-import { LitElement, css, html, type PropertyValues } from 'lit';
+import { LitElement, css, html, nothing, type PropertyValues } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 import '../shared/load-tokens.js';
 import '../button/cc-button.js';
@@ -47,6 +47,7 @@ export class CcCalendar extends LitElement {
     required: { type: Boolean, reflect: true },
     draft: { state: true },
     focusDate: { state: true },
+    openPicker: { state: true },
   };
 
   /** @internal */
@@ -62,6 +63,8 @@ export class CcCalendar extends LitElement {
   declare draft: string;
   /** @internal */
   declare focusDate: string;
+  /** @internal */
+  declare openPicker: 'month' | 'year' | '';
 
   constructor() {
     super();
@@ -72,8 +75,24 @@ export class CcCalendar extends LitElement {
     this.required = false;
     this.draft = '';
     this.focusDate = todayIso();
+    this.openPicker = '';
     this.addEventListener('click', this.handleHostClick);
   }
+
+  connectedCallback() {
+    super.connectedCallback();
+    document.addEventListener('click', this.handleOutsideClick);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('click', this.handleOutsideClick);
+  }
+
+  /** @internal */
+  private handleOutsideClick = (event: MouseEvent) => {
+    if (this.openPicker && !event.composedPath().includes(this)) this.openPicker = '';
+  };
 
   /** @internal */
   private handleHostClick = (event: MouseEvent) => {
@@ -156,8 +175,106 @@ export class CcCalendar extends LitElement {
   }
 
   /** @internal */
-  private moveMonth(months: number) {
+  private togglePicker(kind: 'month' | 'year') {
+    this.openPicker = this.openPicker === kind ? '' : kind;
+    if (!this.openPicker) return;
+    this.updateComplete.then(() => {
+      const list = this.shadowRoot?.querySelector<HTMLElement>('.list');
+      const selected = list?.querySelector<HTMLButtonElement>('[aria-selected="true"]');
+      if (!list || !selected) return;
+      selected.focus({ preventScroll: true });
+      list.scrollTop = selected.offsetTop - (list.clientHeight - selected.offsetHeight) / 2;
+    });
+  }
+
+  /** @internal */
+  private pick(kind: 'month' | 'year', value: number) {
+    const date = new Date(fromIso(this.focusDate));
+    const months = kind === 'month' ? value - date.getUTCMonth() : (value - date.getUTCFullYear()) * 12;
     this.focusDate = addMonths(this.focusDate, months);
+    this.closePicker();
+  }
+
+  /** @internal */
+  private closePicker() {
+    const kind = this.openPicker;
+    this.openPicker = '';
+    this.updateComplete.then(() => this.shadowRoot?.querySelector<HTMLButtonElement>(`.picker[data-kind="${kind}"] .chip`)?.focus());
+  }
+
+  /** @internal */
+  private handlePickerKeydown(event: KeyboardEvent) {
+    if (!this.openPicker) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.closePicker();
+      return;
+    }
+    const step = event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0;
+    if (!step) return;
+    event.preventDefault();
+    const options = [...this.shadowRoot!.querySelectorAll<HTMLButtonElement>('.list [role="option"]:not(:disabled)')];
+    const index = options.indexOf(this.shadowRoot!.activeElement as HTMLButtonElement);
+    options[Math.min(options.length - 1, Math.max(0, index + step))]?.focus();
+  }
+
+  /** @internal */
+  private monthOptions() {
+    const year = new Date(fromIso(this.focusDate)).getUTCFullYear();
+    const format = new Intl.DateTimeFormat(this.locales, { month: 'long', timeZone: 'UTC' });
+    const current = new Date(fromIso(this.focusDate)).getUTCMonth();
+    return Array.from({ length: 12 }, (_, month) => {
+      const first = toIso(Date.UTC(year, month, 1));
+      const last = toIso(Date.UTC(year, month + 1, 0));
+      const unavailable = (isIsoDate(this.min) && last < this.min) || (isIsoDate(this.max) && first > this.max);
+      return { value: month, label: format.format(Date.UTC(year, month, 1)), selected: month === current, disabled: unavailable };
+    });
+  }
+
+  /** @internal */
+  private yearOptions() {
+    const current = new Date(fromIso(this.focusDate)).getUTCFullYear();
+    const first = Math.min(current, isIsoDate(this.min) ? Number(this.min.slice(0, 4)) : current - 100);
+    const last = Math.max(current, isIsoDate(this.max) ? Number(this.max.slice(0, 4)) : current + 100);
+    return Array.from({ length: last - first + 1 }, (_, index) => {
+      const year = first + index;
+      return { value: year, label: String(year), selected: year === current, disabled: false };
+    });
+  }
+
+  /** @internal */
+  private renderPicker(kind: 'month' | 'year') {
+    const options = kind === 'month' ? this.monthOptions() : this.yearOptions();
+    const name = kind === 'month' ? 'Month' : 'Year';
+    const label = options.find((option) => option.selected)!.label;
+    const open = this.openPicker === kind;
+    return html`<div class="picker" data-kind=${kind}>
+      <button
+        type="button"
+        class="chip"
+        aria-label=${`${name}, ${label}`}
+        aria-haspopup="listbox"
+        aria-expanded=${open ? 'true' : 'false'}
+        ?disabled=${this.disabled || options.length < 2}
+        @click=${() => this.togglePicker(kind)}
+      >
+        <span>${label}</span><span class="expand" aria-hidden="true"></span>
+      </button>
+      ${open
+        ? html`<div class="list" role="listbox" aria-label=${name}>
+            ${options.map(
+              (option) => html`<button
+                type="button"
+                role="option"
+                tabindex="-1"
+                aria-selected=${option.selected ? 'true' : 'false'}
+                ?disabled=${option.disabled}
+                @click=${() => this.pick(kind, option.value)}
+              >${option.label}</button>`,
+            )}
+          </div>`
+        : nothing}
+    </div>`;
   }
 
   /** @internal */
@@ -222,9 +339,7 @@ export class CcCalendar extends LitElement {
     const date = new Date(fromIso(this.focusDate));
     const first = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1);
     const offset = weekday(toIso(first));
-    const daysInMonth = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate();
-    const rowCount = Math.max(5, Math.ceil((offset + daysInMonth) / 7));
-    return Array.from({ length: rowCount }, (_, row) =>
+    return Array.from({ length: 6 }, (_, row) =>
       Array.from({ length: 7 }, (_, column) => toIso(first + (row * 7 + column - offset) * DAY_MS)),
     );
   }
@@ -287,43 +402,99 @@ export class CcCalendar extends LitElement {
         height: var(--_cell);
       }
       .title {
-        font-size: var(--cc-text-size-label-l);
-        line-height: var(--cc-line-height-label-l);
-        font-weight: var(--cc-font-weight-semi-bold);
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
       }
-      .nav {
-        display: grid;
-        place-items: center;
-        width: var(--_cell);
-        height: var(--_cell);
-        padding: 0;
+
+      .picker {
+        position: relative;
+      }
+      .chip,
+      .list [role='option'] {
+        display: flex;
+        align-items: center;
+        gap: var(--cc-gap-gap-1);
         border: none;
-        border-radius: var(--cc-radius);
         background: transparent;
         color: var(--cc-text-medium-emphasis);
+        font-family: var(--cc-typeface-typeface);
+        font-size: var(--cc-text-size-label-m);
+        font-weight: var(--cc-font-weight-regular);
+        line-height: var(--cc-line-height-label-m);
+        font-variation-settings: 'YOPQ' 300;
         cursor: pointer;
       }
-      .nav:hover {
+      .chip {
+        justify-content: space-between;
+        padding: var(--cc-padding-padding-1) var(--cc-padding-padding-1) var(--cc-padding-padding-1)
+          var(--cc-padding-padding-2);
+        border: 1px solid var(--cc-border-medium-contrast);
+        border-radius: var(--cc-radius);
+      }
+      .picker[data-kind='month'] .chip {
+        width: 122px;
+      }
+      .chip:hover {
         background: var(--cc-surface-surface-highlight-transparent);
       }
-      .nav:active {
-        opacity: 0.7;
-      }
-      .nav:disabled {
+      .chip:disabled {
         cursor: not-allowed;
       }
-      .nav:focus-visible,
+      .expand::before {
+        display: block;
+        font-family: 'Material Icons Round';
+        font-size: var(--cc-icon-md);
+        line-height: 1;
+        content: '\\e5cf';
+      }
+      .chip[aria-expanded='true'] .expand {
+        transform: rotate(180deg);
+      }
+      .list {
+        position: absolute;
+        z-index: 2;
+        top: calc(100% + var(--cc-gap-gap-0-25));
+        left: 0;
+        box-sizing: border-box;
+        min-width: 100%;
+        max-height: calc(var(--_cell) * 6);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--cc-border-medium-contrast) transparent;
+        padding: var(--cc-padding-padding-0-5);
+        border: 1px solid var(--cc-border-medium-contrast);
+        border-radius: var(--cc-radius);
+        background: var(--cc-surface-surface-1);
+      }
+      .picker[data-kind='year'] .list {
+        right: 0;
+        left: auto;
+      }
+      .list [role='option'] {
+        width: 100%;
+        padding: var(--cc-padding-padding-1) var(--cc-padding-padding-1-5);
+        border-radius: var(--cc-radius);
+        text-align: start;
+      }
+      .list [role='option']:hover:not(:disabled) {
+        background: var(--cc-surface-surface-highlight-transparent);
+      }
+      .list [role='option'][aria-selected='true'] {
+        background: var(--cc-accent-main);
+        color: var(--cc-text-high-emphasis);
+      }
+      .list [role='option']:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .chip:focus-visible,
+      .list [role='option']:focus-visible,
       .cell button:focus-visible {
         outline: 2px solid var(--cc-border-focus);
-      }
-      .chevron::before {
-        font-family: 'Material Icons Round';
-        font-size: var(--cc-icon-sm);
-        line-height: 1;
-        content: '\\e5cb';
-      }
-      .chevron-right::before {
-        content: '\\e5cc';
       }
 
       .grid {
@@ -396,27 +567,10 @@ export class CcCalendar extends LitElement {
   render() {
     const weeks = this.weeks();
     return html`<div class="calendar">
-      <div class="header">
-        <button
-          type="button"
-          class="nav"
-          aria-label="Previous month"
-          ?disabled=${this.disabled}
-          @click=${() => this.moveMonth(-1)}
-        >
-          <span class="chevron chevron-left" aria-hidden="true"></span>
-        </button>
-        <div class="title" id="title" aria-live="polite">${this.monthTitle()}</div>
-        <button
-          type="button"
-          class="nav"
-          aria-label="Next month"
-          ?disabled=${this.disabled}
-          @click=${() => this.moveMonth(1)}
-        >
-          <span class="chevron chevron-right" aria-hidden="true"></span>
-        </button>
+      <div class="header" @keydown=${this.handlePickerKeydown}>
+        ${this.renderPicker('month')}${this.renderPicker('year')}
       </div>
+      <div class="title" id="title" aria-live="polite">${this.monthTitle()}</div>
       <div class="grid" role="grid" aria-labelledby="title" @keydown=${this.handleGridKeydown}>
         <div role="row" class="weekdays">
           ${this.weekdayNames().map((name) => html`<div role="columnheader" class="weekday">${name}</div>`)}

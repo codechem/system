@@ -20,8 +20,12 @@ const weekdays = (el: CcCalendar) =>
 const rowCount = (el: CcCalendar) => el.shadowRoot!.querySelectorAll('[role="row"]').length - 1;
 const footerButton = (el: CcCalendar, variant: 'text' | 'filled') =>
   el.shadowRoot!.querySelector<HTMLElement>(`cc-button[variant="${variant}"]`)!;
-const navButton = (el: CcCalendar, label: string) =>
-  el.shadowRoot!.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`)!;
+const pickerButton = (el: CcCalendar, kind: 'month' | 'year') =>
+  el.shadowRoot!.querySelector<HTMLButtonElement>(`.picker[data-kind="${kind}"] .chip`)!;
+const option = (el: CcCalendar, label: string) =>
+  [...el.shadowRoot!.querySelectorAll<HTMLButtonElement>('.list [role="option"]')].find(
+    (o) => o.textContent!.trim() === label,
+  )!;
 
 const tokenColor = (token: string) => {
   const probe = document.createElement('div');
@@ -53,12 +57,16 @@ describe('cc-calendar', () => {
     expect(weekdays(el)).toEqual(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
   });
 
-  it('uses 5 week rows for November 2024 and 6 when a month needs them', async () => {
+  it('always shows 6 week rows so the height never changes between months', async () => {
     const el = await render(november);
-    expect(rowCount(el)).toBe(5);
-    el.value = '2024-03-10';
-    await el.updateComplete;
-    expect(rowCount(el)).toBe(6);
+    const height = () => el.shadowRoot!.querySelector('.calendar')!.getBoundingClientRect().height;
+    const first = height();
+    for (const value of ['2024-03-10', '2024-02-10', '2026-02-10', '2024-12-10']) {
+      el.value = value;
+      await el.updateComplete;
+      expect(rowCount(el)).toBe(6);
+      expect(height()).toBe(first);
+    }
   });
 
   it('names each day with its full date and marks the value as selected', async () => {
@@ -74,15 +82,98 @@ describe('cc-calendar', () => {
     expect(selected).toBe(tokenColor('--cc-accent-main'));
   });
 
-  it('navigates months with the previous and next buttons', async () => {
+  it('shows the Figma header: a 122px month dropdown and a year dropdown, no arrows', async () => {
     const el = await render(november);
-    navButton(el, 'Next month').click();
+    expect(pickerButton(el, 'month').textContent!.trim()).toContain('November');
+    expect(pickerButton(el, 'month').getBoundingClientRect().width).toBe(122);
+    expect(pickerButton(el, 'year').textContent!.trim()).toContain('2024');
+    expect(el.shadowRoot!.querySelector('.nav')).toBeNull();
+  });
+
+  it('picks a month and a year from the dropdowns, clamping the day', async () => {
+    const el = await render('<cc-calendar locale="en-US" value="2024-01-31"></cc-calendar>');
+    pickerButton(el, 'month').click();
     await el.updateComplete;
-    expect(title(el)).toBe('December 2024');
-    navButton(el, 'Previous month').click();
-    navButton(el, 'Previous month').click();
+    option(el, 'February').click();
     await el.updateComplete;
-    expect(title(el)).toBe('October 2024');
+    expect(title(el)).toBe('February 2024');
+    expect(el.focusDate).toBe('2024-02-29');
+    expect(el.shadowRoot!.querySelector('.list')).toBeNull();
+
+    pickerButton(el, 'year').click();
+    await el.updateComplete;
+    option(el, '2023').click();
+    await el.updateComplete;
+    expect(title(el)).toBe('February 2023');
+    expect(el.focusDate).toBe('2023-02-28');
+    expect(el.value).toBe('2024-01-31');
+  });
+
+  it('marks the current month and year as selected and focuses it when opened', async () => {
+    const el = await render(november);
+    pickerButton(el, 'year').click();
+    await el.updateComplete;
+    await el.updateComplete;
+    expect(option(el, '2024').getAttribute('aria-selected')).toBe('true');
+    expect(el.shadowRoot!.activeElement).toBe(option(el, '2024'));
+    expect(pickerButton(el, 'year').getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('closes the dropdown with Escape and returns focus to its button', async () => {
+    const el = await render(november);
+    pickerButton(el, 'month').click();
+    await el.updateComplete;
+    await el.updateComplete;
+    await userEvent.keyboard('{Escape}');
+    await el.updateComplete;
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.list')).toBeNull();
+    expect(el.shadowRoot!.activeElement).toBe(pickerButton(el, 'month'));
+  });
+
+  it('moves between options with the arrow keys', async () => {
+    const el = await render(november);
+    pickerButton(el, 'month').click();
+    await el.updateComplete;
+    await el.updateComplete;
+    await userEvent.keyboard('{ArrowUp}');
+    expect(el.shadowRoot!.activeElement).toBe(option(el, 'October'));
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}');
+    expect(el.shadowRoot!.activeElement).toBe(option(el, 'December'));
+  });
+
+  it('closes the dropdown when clicking outside the calendar', async () => {
+    const el = await render(november);
+    pickerButton(el, 'year').click();
+    await el.updateComplete;
+    document.body.click();
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.list')).toBeNull();
+  });
+
+  it('disables the year dropdown when min and max leave a single year', async () => {
+    const el = await render(
+      '<cc-calendar locale="en-US" value="2024-11-14" min="2024-11-05" max="2024-11-22"></cc-calendar>',
+    );
+    expect(pickerButton(el, 'year').disabled).toBe(true);
+    expect(pickerButton(el, 'month').disabled).toBe(false);
+  });
+
+  it('limits years to min and max and disables months outside them', async () => {
+    const el = await render(
+      '<cc-calendar locale="en-US" value="2024-11-14" min="2023-03-10" max="2025-06-20"></cc-calendar>',
+    );
+    pickerButton(el, 'year').click();
+    await el.updateComplete;
+    const years = [...el.shadowRoot!.querySelectorAll('.list [role="option"]')].map((o) => o.textContent!.trim());
+    expect(years).toEqual(['2023', '2024', '2025']);
+
+    el.focusDate = '2025-01-15';
+    pickerButton(el, 'year').click();
+    pickerButton(el, 'month').click();
+    await el.updateComplete;
+    expect(option(el, 'June').disabled).toBe(false);
+    expect(option(el, 'July').disabled).toBe(true);
   });
 
   it('picks a date on click, fires input, and commits only on Done', async () => {
@@ -173,7 +264,8 @@ describe('cc-calendar', () => {
     expect(onInput).not.toHaveBeenCalled();
     expect(onChange).not.toHaveBeenCalled();
     expect(el.value).toBe('2024-11-14');
-    expect(navButton(el, 'Next month').disabled).toBe(true);
+    expect(pickerButton(el, 'month').disabled).toBe(true);
+    expect(pickerButton(el, 'year').disabled).toBe(true);
     expect(dayButton(el, '2024-11-14').disabled).toBe(true);
   });
 
@@ -257,11 +349,12 @@ describe('cc-calendar', () => {
     expect(new FormData(form).get('when')).toBeNull();
   });
 
-  it('exposes the grid, the day names and the nav buttons by accessible name', async () => {
+  it('exposes the grid, the day names and the dropdown buttons by accessible name', async () => {
     const el = await render(november);
     const grid = el.shadowRoot!.querySelector('[role="grid"]')!;
     expect(grid.getAttribute('aria-labelledby')).toBe('title');
-    await expect.element(page.getByRole('button', { name: 'Previous month', exact: true })).toBeInTheDocument();
+    await expect.element(page.getByRole('button', { name: 'Month, November', exact: true })).toBeInTheDocument();
+    await expect.element(page.getByRole('button', { name: 'Year, 2024', exact: true })).toBeInTheDocument();
     await expect.element(page.getByRole('button', { name: 'Done', exact: true })).toBeInTheDocument();
     await expect.element(page.getByRole('button', { name: 'Cancel', exact: true })).toBeInTheDocument();
   });

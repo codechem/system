@@ -392,7 +392,7 @@ export const guides: Record<string, ComponentGuide> = {
       'Provide visible context for what date is being chosen. Arrow keys move between days; test min/max constraints and keyboard navigation.',
       'Allow enough room for the calendar grid. Avoid placing it in a narrow inline toolbar.',
     ],
-    markup: '<cc-calendar value="2026-11-18" min="2026-11-01" max="2026-12-31" locale="en-GB"></cc-calendar>',
+    markup: '<cc-calendar value="2026-11-18" min="2025-01-01" max="2028-12-31" locale="en-GB"></cc-calendar>',
     javascript:
       "const calendar = document.querySelector('cc-calendar');\ncalendar.addEventListener('change', () => {\n  console.log(calendar.value); // Confirmed YYYY-MM-DD date\n});",
     related: ['Number input stepper', 'Text input'],
