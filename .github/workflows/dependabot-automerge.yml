@@ -1,0 +1,32 @@
+name: Merge site dependency bumps
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge and deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          pr=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          [ -n "$pr" ] || { echo "No open PR for $BRANCH"; exit 0; }
+          # Only the site manifest and the lockfile may change.
+          extra=$(gh pr diff "$pr" --name-only | grep -vxE 'apps/site/package.json|package-lock.json' || true)
+          [ -z "$extra" ] || { echo "::error::PR #$pr changes other files:"; echo "$extra"; exit 1; }
+          gh pr merge "$pr" --squash
+          gh workflow run deploy-site.yml --ref main
