@@ -617,6 +617,7 @@ input[type='range'] {
   font-size: 0.9375rem;
 }
 .footer-inner ul {
+  flex: 1 0 100%;
   flex-wrap: wrap;
   gap: 1.25rem;
 }

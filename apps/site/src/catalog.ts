@@ -203,12 +203,12 @@ export const catalog: Group[] = [
       },
       {
         slug: 'accordion',
-        hint: 'Click the heading',
+        hint: 'Click to open',
         name: 'Accordion',
         tag: 'cc-accordion',
         path: 'accordion.js',
         summary: 'A disclosure section with heading and subtitle, in three sizes.',
-        demo: `<cc-accordion heading="Can I use it with React?" subtitle="Framework support" open>Yes. React 19 supports custom elements natively, so no wrapper is needed.</cc-accordion>`,
+        demo: `<cc-accordion heading="Can I use it with React?" subtitle="Framework support">Yes. React 19 supports custom elements natively, so no wrapper is needed.</cc-accordion>`,
       },
       {
         slug: 'list-item',

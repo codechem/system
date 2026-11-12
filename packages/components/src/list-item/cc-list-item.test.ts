@@ -71,7 +71,7 @@ describe('cc-list-item', () => {
     const style = getComputedStyle(row);
     expect([style.paddingTop, style.paddingRight, style.paddingLeft, style.borderTopLeftRadius]).toEqual([
       `${padding}px`,
-      `${padding}px`,
+      '4px',
       `${paddingLeft}px`,
       '4px',
     ]);
@@ -166,6 +166,15 @@ describe('cc-list-item', () => {
       await userEvent.click(page.getByRole('button', { name: 'Remove List item', exact: true }));
       expect(onRemove).toHaveBeenCalledOnce();
       expect(onRemove.mock.calls[0][0].target).toBe(el);
+    });
+
+    it('removes the item from the DOM, unless the remove event is cancelled', async () => {
+      const el = await render('<cc-list-item label="List item"></cc-list-item>');
+      el.addEventListener('remove', (e) => e.preventDefault(), { once: true });
+      await userEvent.click(page.getByRole('button', { name: 'Remove List item', exact: true }));
+      expect(el.isConnected).toBe(true);
+      await userEvent.click(page.getByRole('button', { name: 'Remove List item', exact: true }));
+      expect(el.isConnected).toBe(false);
     });
 
     it.each(['Enter', ' '])('fires remove from the keyboard with %j', async (key) => {

@@ -8,7 +8,7 @@ import '../checkbox/cc-checkbox.js';
  * List item. Mirrors the Figma "List Item" component set. Put items in a container with `role="list"`.
  *
  * @fires change - When the leading checkbox is toggled
- * @fires remove - When the user clicks the remove button
+ * @fires remove - When the user clicks the remove button. Cancelable: the item removes itself from the DOM unless `preventDefault()` is called
  */
 export class CcListItem extends LitElement {
   static properties = {
@@ -55,7 +55,7 @@ export class CcListItem extends LitElement {
 
   /** @internal */
   private handleRemove() {
-    this.dispatchEvent(new Event('remove', { bubbles: true }));
+    if (this.dispatchEvent(new Event('remove', { bubbles: true, cancelable: true }))) this.remove();
   }
 
   static styles = [
@@ -85,7 +85,7 @@ export class CcListItem extends LitElement {
         display: flex;
         align-items: center;
         gap: var(--_gap);
-        padding: var(--_py) var(--_py) var(--_py) var(--_pl);
+        padding: var(--_py) var(--cc-padding-padding-0-5) var(--_py) var(--_pl);
         border-radius: var(--cc-radius);
         background-color: var(--_bg);
         font-family: var(--cc-typeface-typeface);
