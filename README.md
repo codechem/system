@@ -117,8 +117,8 @@ Run from the repo root:
 ```
 packages/
   tokens/
-    src/            Token JSON exported from Figma Variables
-    modes/          Other Figma modes (e.g. mobile typography), exported but not built yet
+    src/            Raw Figma Variables exports (*.tokens.json); aliases are restored at build time
+                    (typography-mobile.tokens.json is exported but not built yet)
     dist/           Generated tokens.css (gitignored)
   components/
     src/

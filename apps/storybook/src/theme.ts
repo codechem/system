@@ -1,14 +1,11 @@
 import { create } from 'storybook/theming';
-import colors from '../../../packages/tokens/src/color.dark.json';
-import primitives from '../../../packages/tokens/src/primitives.json';
+import colors from '../../../packages/tokens/src/color.tokens.json';
 
-type TokenTree = { [key: string]: TokenTree | string };
-const source: TokenTree = { ...primitives, ...colors };
+type TokenTree = { [key: string]: TokenTree | { hex: string } };
 const value = (path: string): string => {
-  let node: TokenTree | string = source;
-  for (const segment of path.split('.')) node = (node as TokenTree)[segment];
-  const raw = (node as TokenTree).$value as string;
-  return raw.startsWith('{') ? value(raw.slice(1, -1)) : raw;
+  let node = colors as unknown as TokenTree;
+  for (const segment of path.split('.')) node = node[segment] as TokenTree;
+  return (node.$value as unknown as { hex: string }).hex.toLowerCase();
 };
 
 // Resolve source tokens, not a Vite ?raw import: the manager uses esbuild.

@@ -1,0 +1,31 @@
+{
+  "radius": {
+    "$type": "number",
+    "$value": 4,
+    "$extensions": {
+      "com.figma.variableId": "VariableID:304:11008",
+      "com.figma.scopes": [
+        "ALL_SCOPES"
+      ],
+      "com.figma.aliasData": {
+        "targetVariableId": "VariableID:8532af74d5b160afafa64ab1cdc0fd5f22880851/-1:-1",
+        "targetVariableName": "Unit/0,5x",
+        "targetVariableSetId": "VariableCollectionId:2a596808b73ed6c047548aa2d01c7ec1e90ff88c/-1:-1",
+        "targetVariableSetName": "Primitives"
+      }
+    }
+  },
+  "round": {
+    "$type": "number",
+    "$value": 999,
+    "$extensions": {
+      "com.figma.variableId": "VariableID:332:12956",
+      "com.figma.scopes": [
+        "ALL_SCOPES"
+      ]
+    }
+  },
+  "$extensions": {
+    "com.figma.modeName": "Mode 1"
+  }
+}
