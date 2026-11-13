@@ -23,7 +23,14 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run build
-      - run: npm test
+      - run: npm run test:coverage
+      - name: Upload component coverage reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: component-coverage
+          path: packages/components/coverage/
+          if-no-files-found: warn
 
   publish:
     needs: test

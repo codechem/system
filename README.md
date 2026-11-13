@@ -86,6 +86,30 @@ The browser suite serves the production build on an ephemeral localhost port and
 
 ### Tests
 
+Run component coverage locally after building and installing Chromium (see Setup):
+
+```sh
+npm run test:coverage
+```
+
+Coverage includes all production TypeScript in `packages/components/src`, including
+untested files, but excludes tests, stories, and declarations. Overall statements,
+branches, functions, and lines must each reach 85%. Applications, release scripts,
+and token generation are outside this scope.
+The HTML report is at `packages/components/coverage/index.html` and LCOV data at
+`packages/components/coverage/lcov.info`. CI runs the same command and uploads the
+`component-coverage` artifact even when coverage fails; failed coverage blocks publishing.
+To block PR merges as well, configure branch protection or a repository ruleset
+to require the CI workflow's `test` status check before merging.
+
+PR titles must use Conventional Commits, such as `feat: add calendar`,
+`fix(button): preserve focus`, or `feat!: remove deprecated API`. Allowed types
+are `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`,
+`chore`, and `revert`; scopes are optional. Add **Semantic PR title** to the
+ruleset's required checks after the workflow has run. Allow only squash merges
+and select **Pull request title** as the default squash commit title in repository
+settings so release notes receive the validated title.
+
 ```sh
 npm test
 ```
