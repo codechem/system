@@ -37,7 +37,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
                   <button class="import" type="button" data-copy={line} aria-label={`Copy import for ${c.name}`}>
                     <code>{c.path}</code><span class="material-icons-round" aria-hidden="true">content_copy</span>
                   </button>
-                  {storybook && <a class="more" href={storybook}>Props and examples in Storybook</a>}
+                  {storybook && <a class="more" href={`${storybook}?path=/docs/components-${c.slug === 'textarea' ? 'text-area' : c.slug}--docs`}>Props and examples in Storybook</a>}
                 </div>
               </article>
             );
