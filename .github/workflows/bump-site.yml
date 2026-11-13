@@ -1,0 +1,64 @@
+name: Bump site packages
+
+# After a package release, pins apps/site to the latest published @codechem
+# versions, checks that the site still builds, commits to main and asks
+# Dokploy to redeploy. A push made with GITHUB_TOKEN does not start the push
+# workflows, so the deploy is dispatched explicitly.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: bump-site
+
+jobs:
+  bump:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       (startsWith(github.event.workflow_run.head_branch, 'tokens-v') ||
+        startsWith(github.event.workflow_run.head_branch, 'components-v')))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm install -g npm@12
+      - name: Pin the latest published versions
+        id: pin
+        run: |
+          tokens=$(npm view @codechem/tokens version)
+          components=$(npm view @codechem/components version)
+          npm install "@codechem/tokens@$tokens" "@codechem/components@$components" \
+            -w @codechem/site --save-exact --package-lock-only --ignore-scripts
+          if git diff --quiet; then echo "changed=false" >> "$GITHUB_OUTPUT"; else echo "changed=true" >> "$GITHUB_OUTPUT"; fi
+          echo "message=chore(site): bump @codechem packages (tokens $tokens, components $components)" >> "$GITHUB_OUTPUT"
+      - name: Check that the site still builds
+        if: steps.pin.outputs.changed == 'true'
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+          npm run build -w @codechem/site
+      - name: Commit and deploy
+        if: steps.pin.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MESSAGE: ${{ steps.pin.outputs.message }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "$MESSAGE"
+          git push origin HEAD:main
+          gh workflow run deploy-site.yml --ref main

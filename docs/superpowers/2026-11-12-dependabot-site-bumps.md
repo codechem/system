@@ -1,20 +1,27 @@
-# Dependabot bumps for the site
+# Site package bumps after a release
 
-**Date:** 2026-11-12
+**Date:** 2026-11-12 (updated 2026-11-13)
 
 ## Goal
 
-After a package release, the site's pinned `@codechem/*` versions are bumped, merged and redeployed without manual steps.
+After a package release, the site's pinned `@codechem/*` versions are bumped and redeployed without manual steps.
 
-## Design
+## What was tried: Dependabot (removed)
 
-- `.github/dependabot.yml`: npm, repo root (the lockfile lives there), only `@codechem/*`, one grouped PR so tokens and components move together.
-- `.github/workflows/dependabot-automerge.yml`: runs after CI completes. For a successful `pull_request` run by `dependabot[bot]`, it finds the PR, refuses if it touches anything but `apps/site/package.json` and `package-lock.json`, squash-merges it, then dispatches `deploy-site.yml`.
-- The deploy is dispatched explicitly because a merge made with `GITHUB_TOKEN` does not trigger the push-based CI and `workflow_run` deploy.
+- The first run found no update. The log said `Filtered out 4 versions due to cooldown`: Dependabot applies a default 3-day cooldown, and 0.0.4 to 0.0.7 were newer than that. `cooldown: default-days: 0` fixed this.
+- The second run found `Latest version is 0.0.7` but ended with `No update possible`. The equivalent `npm install ... -w @codechem/site --save-exact --package-lock-only` worked locally, so the limit was in Dependabot. Likely cause (not confirmed): the repo has workspace packages with the same names as the site's dependencies.
+- `dependabot.yml` and `dependabot-automerge.yml` were removed.
+
+## Current design: `.github/workflows/bump-site.yml`
+
+- Triggers after `CI` completes successfully for a push of a `tokens-v*` or `components-v*` tag (publish is part of that run), or manually (`workflow_dispatch`).
+- Reads the latest published versions with `npm view`, pins both in `apps/site/package.json` and the lockfile (`--save-exact --package-lock-only`), and stops if nothing changed.
+- Runs `npm ci`, the root build and the site build as the check, then commits to `main` and dispatches `deploy-site.yml`.
+- Pushes made with `GITHUB_TOKEN` do not start CI or the `workflow_run` deploy, so the deploy is dispatched explicitly. CI does not run on `main` for these commits; the in-workflow site build is the gate.
+- A direct commit instead of a PR: creating PRs from Actions needs a repository setting that may be off, and a PR opened with `GITHUB_TOKEN` would not get a CI run anyway.
+- `concurrency` serializes the two runs when tokens and components are tagged close together; the second run sees both versions already pinned.
 
 ## Caveats
 
-- Not run on GitHub yet.
-- Merging needs no required reviews on `main`; with a required-approval rule the merge step fails. Repository settings were not checked.
-- CI does not run again on `main` after these merges; the PR's CI run is the gate.
-- Dependabot's handling of npm workspaces was not verified; check the first run in Insights, Dependency graph, Dependabot.
+- Not run on GitHub yet; first test with Actions, Bump site packages, Run workflow.
+- Requires that `main` accepts pushes from `github-actions[bot]` (no branch protection blocking it). Repository settings were not checked.
