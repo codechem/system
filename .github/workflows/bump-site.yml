@@ -1,8 +1,9 @@
 name: Bump site packages
 
 # After a package release, pins apps/site to the latest published @codechem
-# versions, checks that the site still builds, commits to main and asks
-# Dokploy to redeploy. A push made with GITHUB_TOKEN does not start the push
+# versions and checks that the site builds. A patch bump is committed to main
+# and deployed. Anything else (new minor or major) opens a pull request that
+# a reviewer merges. Pushes made with GITHUB_TOKEN do not start the push
 # workflows, so the deploy is dispatched explicitly.
 
 on:
@@ -14,6 +15,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 concurrency:
   group: bump-site
@@ -39,20 +41,29 @@ jobs:
       - name: Pin the latest published versions
         id: pin
         run: |
+          site=apps/site/package.json
+          old_tokens=$(node -p "require('./$site').dependencies['@codechem/tokens']")
+          old_components=$(node -p "require('./$site').dependencies['@codechem/components']")
           tokens=$(npm view @codechem/tokens version)
           components=$(npm view @codechem/components version)
           npm install "@codechem/tokens@$tokens" "@codechem/components@$components" \
             -w @codechem/site --save-exact --package-lock-only --ignore-scripts
           if git diff --quiet; then echo "changed=false" >> "$GITHUB_OUTPUT"; else echo "changed=true" >> "$GITHUB_OUTPUT"; fi
+          # ${v%.*} drops the patch number, leaving major.minor
+          if [ "${old_tokens%.*}" != "${tokens%.*}" ] || [ "${old_components%.*}" != "${components%.*}" ]; then
+            echo "review=true" >> "$GITHUB_OUTPUT"
+          fi
           echo "message=chore(site): bump @codechem packages (tokens $tokens, components $components)" >> "$GITHUB_OUTPUT"
       - name: Check that the site still builds
+        id: build
         if: steps.pin.outputs.changed == 'true'
+        continue-on-error: ${{ steps.pin.outputs.review == 'true' }}
         run: |
           npm ci --ignore-scripts
           npm run build
           npm run build -w @codechem/site
-      - name: Commit and deploy
-        if: steps.pin.outputs.changed == 'true'
+      - name: Commit to main and deploy
+        if: steps.pin.outputs.changed == 'true' && steps.pin.outputs.review != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           MESSAGE: ${{ steps.pin.outputs.message }}
@@ -62,3 +73,23 @@ jobs:
           git commit -am "$MESSAGE"
           git push origin HEAD:main
           gh workflow run deploy-site.yml --ref main
+      - name: Open or update the pull request for review
+        if: steps.pin.outputs.changed == 'true' && steps.pin.outputs.review == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MESSAGE: ${{ steps.pin.outputs.message }}
+          BUILD: ${{ steps.build.outcome }}
+          BRANCH: chore/bump-site-packages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git commit -am "$MESSAGE"
+          git push --force origin "$BRANCH"
+          body="A new minor or major release of a @codechem package needs a review. Site build in the workflow: **$BUILD**. Merging deploys the site."
+          pr=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --title "$MESSAGE" --body "$body"
+          else
+            gh pr create --base main --head "$BRANCH" --title "$MESSAGE" --body "$body"
+          fi

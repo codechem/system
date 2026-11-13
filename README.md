@@ -216,7 +216,7 @@ Rules the pipeline enforces:
 
 - A tokens release fails if a `--cc-*` token disappeared from the last published version without a breaking bump.
 - Components publishes with `@codechem/tokens` pinned to `^<latest published tokens>` (the repo keeps `*` for workspace linking), and fails if `packages/tokens` changed since the last `tokens-v*` tag. Release tokens first, then components.
-- After a release, `.github/workflows/bump-site.yml` pins both packages in `apps/site/package.json` to the latest published versions (together, to avoid two copies of tokens), checks the site builds, commits to `main` and triggers the site deploy. It can also be run by hand from the Actions tab.
+- After a release, `.github/workflows/bump-site.yml` pins both packages in `apps/site/package.json` to the latest published versions (together, to avoid two copies of tokens), checks the site builds, then either commits patch bumps to `main` and triggers the site deploy, or opens a pull request for a reviewer to merge when the minor or major version changed. It can also be run by hand from the Actions tab.
 
 The full setup is in `docs/superpowers/2026-11-09-ci-cd.md`; the per-package design is in `docs/superpowers/2026-11-12-independent-package-releases.md`.
 

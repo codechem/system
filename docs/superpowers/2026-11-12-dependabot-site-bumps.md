@@ -16,12 +16,13 @@ After a package release, the site's pinned `@codechem/*` versions are bumped and
 
 - Triggers after `CI` completes successfully for a push of a `tokens-v*` or `components-v*` tag (publish is part of that run), or manually (`workflow_dispatch`).
 - Reads the latest published versions with `npm view`, pins both in `apps/site/package.json` and the lockfile (`--save-exact --package-lock-only`), and stops if nothing changed.
-- Runs `npm ci`, the root build and the site build as the check, then commits to `main` and dispatches `deploy-site.yml`.
-- Pushes made with `GITHUB_TOKEN` do not start CI or the `workflow_run` deploy, so the deploy is dispatched explicitly. CI does not run on `main` for these commits; the in-workflow site build is the gate.
-- A direct commit instead of a PR: creating PRs from Actions needs a repository setting that may be off, and a PR opened with `GITHUB_TOKEN` would not get a CI run anyway.
-- `concurrency` serializes the two runs when tokens and components are tagged close together; the second run sees both versions already pinned.
+- Compares `major.minor` of each package with what the site pins. Patch only: build check, then commit to `main` and dispatch `deploy-site.yml`. Minor or major change: push the branch `chore/bump-site-packages` and open (or update) a pull request. The workflow never merges or closes it; a reviewer merges it, which pushes to `main` and deploys through the normal CI plus Dokploy path. Closing it without merging drops the bump.
+- For the PR path the site build is `continue-on-error`; the PR description states whether it passed.
+- Pushes and PRs made with `GITHUB_TOKEN` do not start CI, so the patch path dispatches the deploy explicitly and the PR has no CI run; the in-workflow site build is the check.
+- `concurrency` serializes runs when tokens and components are tagged close together.
 
 ## Caveats
 
 - Not run on GitHub yet; first test with Actions, Bump site packages, Run workflow.
-- Requires that `main` accepts pushes from `github-actions[bot]` (no branch protection blocking it). Repository settings were not checked.
+- Needs `main` to accept pushes from `github-actions[bot]`, and the setting Actions, General, Workflow permissions, "Allow GitHub Actions to create and approve pull requests" for the PR path. Repository settings were not checked.
+- "Breaking" is approximated as any minor or major bump. Below 1.0.0 that matches the versioning rules; after 1.0.0 it also holds back new-feature minors.
