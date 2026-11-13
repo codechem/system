@@ -7,7 +7,7 @@
 
 UI components built with [Lit](https://lit.dev), styled with shared design tokens, and delivered as standard web components. Use them in your existing app without adopting another UI framework.
 
-[Website](https://system.codechem.dev) · [Storybook](https://storybook.system.dokploy.codechem.dev/) · [npm](https://www.npmjs.com/package/@codechem/components) · [Report an issue](https://github.com/codechem/system/issues)
+[Website](https://system.codechem.dev) · [Storybook](https://storybook.system.codechem.dev/) · [npm](https://www.npmjs.com/package/@codechem/components) · [Report an issue](https://github.com/codechem/system/issues)
 
 [![Preview of CodeChem UI components](apps/site/public/social-preview.png)](https://system.codechem.dev)
 
@@ -37,7 +37,7 @@ Prefer to register everything? Use `import '@codechem/components'` instead.
 
 Component imports load the design tokens and bundled **Kumbh Sans** and **Material Icons Round** fonts automatically—no separate stylesheet or font setup needed.
 
-For framework setup, forms, events and component APIs, see the [getting started guide](https://system.codechem.dev/getting-started/) and [Storybook](https://storybook.system.dokploy.codechem.dev/).
+For framework setup, forms, events and component APIs, see the [getting started guide](https://system.codechem.dev/getting-started/) and [Storybook](https://storybook.system.codechem.dev/).
 
 ## Make it yours
 

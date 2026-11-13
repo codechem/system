@@ -5,7 +5,7 @@ export const version: string = JSON.parse(
 ).version;
 
 export const storybook: string =
-  import.meta.env.PUBLIC_STORYBOOK_URL ||'https://storybook.system.dokploy.codechem.dev/';
+  import.meta.env.PUBLIC_STORYBOOK_URL || 'https://storybook.system.codechem.dev/';
 
 export const pages = [
   { label: 'Getting started', href: '/getting-started/' },
