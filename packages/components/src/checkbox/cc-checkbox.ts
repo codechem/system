@@ -19,6 +19,7 @@ export class CcCheckbox extends LitElement {
   static properties = {
     checked: { type: Boolean },
     disabled: { type: Boolean, reflect: true },
+    formDisabled: { state: true },
     size: { type: String, reflect: true },
     name: { type: String, reflect: true },
     value: { type: String },
@@ -30,6 +31,8 @@ export class CcCheckbox extends LitElement {
 
   declare checked: boolean;
   declare disabled: boolean;
+  /** @internal */
+  declare formDisabled: boolean;
   declare size: 'medium' | 'large';
   declare name: string;
   declare value: string;
@@ -39,6 +42,7 @@ export class CcCheckbox extends LitElement {
     super();
     this.checked = false;
     this.disabled = false;
+    this.formDisabled = false;
     this.size = 'medium';
     this.value = 'on';
   }
@@ -50,6 +54,13 @@ export class CcCheckbox extends LitElement {
   /** @internal */
   formResetCallback() {
     this.checked = this.hasAttribute('checked');
+  }
+
+  /** @internal */
+  formDisabledCallback(disabled: boolean) {
+    this.formDisabled = disabled;
+    const input = this.shadowRoot?.querySelector('input');
+    if (input) input.disabled = disabled;
   }
 
   updated() {
@@ -139,14 +150,14 @@ export class CcCheckbox extends LitElement {
       outline: 2px solid var(--cc-border-focus);
     }
 
-    :host([disabled]) label {
+    :host(:disabled) label {
       cursor: not-allowed;
       opacity: 0.4;
     }
-    :host([disabled]) label:hover .material-icon {
+    :host(:disabled) label:hover .material-icon {
       color: var(--_color);
     }
-    :host([disabled]) label:active .box {
+    :host(:disabled) label:active .box {
       opacity: 1;
     }
   `,
@@ -158,7 +169,7 @@ export class CcCheckbox extends LitElement {
         <input
           type="checkbox"
           .checked=${live(this.checked)}
-          ?disabled=${this.disabled}
+          ?disabled=${this.disabled || this.formDisabled}
           aria-label=${this.ariaLabel ?? nothing}
           @input=${this.handleInput}
           @change=${this.handleChange}

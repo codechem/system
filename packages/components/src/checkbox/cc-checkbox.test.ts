@@ -129,6 +129,70 @@ describe('cc-checkbox', () => {
       expect(data().get('terms')).toBeNull();
     });
 
+    it('cannot be focused or toggled inside a disabled fieldset', async () => {
+      const el = await render(form('<fieldset disabled><cc-checkbox name="terms">I agree</cc-checkbox></fieldset>'));
+      const onInput = vi.fn();
+      const onChange = vi.fn();
+      el.addEventListener('input', onInput);
+      el.addEventListener('change', onChange);
+      el.click();
+      input(el).click();
+      await clickLabelText(el, { force: true });
+      el.focus();
+      await userEvent.keyboard(' ');
+      await el.updateComplete;
+      expect(input(el).disabled).toBe(true);
+      expect(document.activeElement).not.toBe(el);
+      expect(el.checked).toBe(false);
+      expect(onInput).not.toHaveBeenCalled();
+      expect(onChange).not.toHaveBeenCalled();
+      expect(getComputedStyle(el.shadowRoot!.querySelector('label')!).opacity).toBe('0.4');
+    });
+
+    it('follows fieldset changes without changing its own disabled attribute', async () => {
+      const el = await render(form('<fieldset><cc-checkbox name="terms" checked>I agree</cc-checkbox></fieldset>'));
+      const fieldset = document.querySelector('fieldset')!;
+      fieldset.disabled = true;
+      await el.updateComplete;
+      expect(input(el).disabled).toBe(true);
+      expect(data().get('terms')).toBeNull();
+      expect(el.hasAttribute('disabled')).toBe(false);
+      fieldset.disabled = false;
+      await el.updateComplete;
+      expect(input(el).disabled).toBe(false);
+      expect(data().get('terms')).toBe('on');
+      el.click();
+      await el.updateComplete;
+      expect(el.checked).toBe(false);
+    });
+
+    it('keeps an explicitly disabled checkbox disabled when its fieldset is enabled', async () => {
+      const el = await render(form('<fieldset disabled><cc-checkbox disabled>I agree</cc-checkbox></fieldset>'));
+      document.querySelector('fieldset')!.disabled = false;
+      await el.updateComplete;
+      el.click();
+      expect(input(el).disabled).toBe(true);
+      expect(el.checked).toBe(false);
+    });
+
+    it.each([false, true])('immediately follows fieldset changes from disabled=%s', async (disabled) => {
+      const el = await render(form(`<fieldset ${disabled ? 'disabled' : ''}><cc-checkbox>I agree</cc-checkbox></fieldset>`));
+      const onChange = vi.fn();
+      el.addEventListener('change', onChange);
+      document.querySelector('fieldset')!.disabled = !disabled;
+      el.click();
+      expect(el.checked).toBe(disabled);
+      expect(onChange).toHaveBeenCalledTimes(disabled ? 1 : 0);
+    });
+
+    it('leaves a checkbox in the first legend of a disabled fieldset enabled', async () => {
+      const el = await render(form('<fieldset disabled><legend><cc-checkbox>I agree</cc-checkbox></legend></fieldset>'));
+      el.click();
+      await el.updateComplete;
+      expect(input(el).disabled).toBe(false);
+      expect(el.checked).toBe(true);
+    });
+
     it('resets to its initial state', async () => {
       const el = await render(form('<cc-checkbox name="terms" checked>I agree</cc-checkbox>'));
       el.click();
