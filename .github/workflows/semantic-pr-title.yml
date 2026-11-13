@@ -1,0 +1,27 @@
+name: Semantic PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions: {}
+
+jobs:
+  semantic-pr-title:
+    name: Semantic PR title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Conventional Commit title
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+
+          const { pull_request: { title } } = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+          const pattern = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([^()\s]+\))?!?: [^\s].*$/u;
+          if (/[\r\n]/u.test(title) || !pattern.test(title)) {
+            console.error('PR title must use Conventional Commits: type(scope): description');
+            console.error('Examples: feat: add calendar; fix(button): preserve focus; feat!: remove deprecated API');
+            console.error('Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert');
+            process.exitCode = 1;
+          }
+          NODE
