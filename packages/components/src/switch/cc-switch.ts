@@ -19,6 +19,7 @@ export class CcSwitch extends LitElement {
   static properties = {
     checked: { type: Boolean },
     disabled: { type: Boolean, reflect: true },
+    formDisabled: { state: true },
     size: { type: String, reflect: true },
     name: { type: String, reflect: true },
     value: { type: String },
@@ -30,6 +31,8 @@ export class CcSwitch extends LitElement {
 
   declare checked: boolean;
   declare disabled: boolean;
+  /** @internal */
+  declare formDisabled: boolean;
   declare size: 'small' | 'large';
   declare name: string;
   declare value: string;
@@ -39,6 +42,7 @@ export class CcSwitch extends LitElement {
     super();
     this.checked = false;
     this.disabled = false;
+    this.formDisabled = false;
     this.size = 'small';
     this.value = 'on';
     this.addEventListener('click', this.handleHostClick);
@@ -50,7 +54,7 @@ export class CcSwitch extends LitElement {
 
   /** @internal */
   private handleHostClick = (event: MouseEvent) => {
-    if (!this.disabled) return;
+    if (!(this.disabled || this.formDisabled)) return;
     event.preventDefault();
     event.stopImmediatePropagation();
   };
@@ -58,6 +62,13 @@ export class CcSwitch extends LitElement {
   /** @internal */
   formResetCallback() {
     this.checked = this.hasAttribute('checked');
+  }
+
+  /** @internal */
+  formDisabledCallback(disabled: boolean) {
+    this.formDisabled = disabled;
+    const input = this.shadowRoot?.querySelector('input');
+    if (input) input.disabled = disabled;
   }
 
   updated() {
@@ -155,18 +166,18 @@ export class CcSwitch extends LitElement {
       outline-offset: 2px;
     }
 
-    :host(:not([disabled])) label:hover .track {
+    :host(:not(:disabled)) label:hover .track {
       background: var(--cc-surface-surface-2);
     }
-    :host(:not([disabled])) label:hover input:checked + .track,
-    :host(:not([disabled])) label:active input:checked + .track {
+    :host(:not(:disabled)) label:hover input:checked + .track,
+    :host(:not(:disabled)) label:active input:checked + .track {
       background: var(--cc-accent-dark);
     }
-    :host(:not([disabled])) label:active .track {
+    :host(:not(:disabled)) label:active .track {
       opacity: 0.7;
     }
 
-    :host([disabled]) label {
+    :host(:disabled) label {
       cursor: not-allowed;
       opacity: 0.4;
     }
@@ -180,7 +191,7 @@ export class CcSwitch extends LitElement {
           type="checkbox"
           role="switch"
           .checked=${live(this.checked)}
-          ?disabled=${this.disabled}
+          ?disabled=${this.disabled || this.formDisabled}
           aria-label=${this.ariaLabel ?? nothing}
           @input=${this.handleInput}
           @change=${this.handleChange}

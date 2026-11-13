@@ -223,6 +223,78 @@ describe('cc-switch', () => {
       expect(data().get('alerts')).toBeNull();
     });
 
+    it('cannot be focused or toggled inside a disabled fieldset', async () => {
+      const el = await render(form('<fieldset disabled><cc-switch name="alerts">Alerts</cc-switch></fieldset>'));
+      const onInput = vi.fn();
+      const onChange = vi.fn();
+      el.addEventListener('input', onInput);
+      el.addEventListener('change', onChange);
+      el.click();
+      input(el).click();
+      await clickLabelText(el, { force: true });
+      el.focus();
+      await userEvent.keyboard(' ');
+      await el.updateComplete;
+      expect(input(el).disabled).toBe(true);
+      expect(document.activeElement).not.toBe(el);
+      expect(el.checked).toBe(false);
+      expect(onInput).not.toHaveBeenCalled();
+      expect(onChange).not.toHaveBeenCalled();
+      expect(getComputedStyle(label(el)).opacity).toBe('0.4');
+    });
+
+    it('blocks host click listeners inside a disabled fieldset', async () => {
+      const el = await render(form('<fieldset disabled><cc-switch>Alerts</cc-switch></fieldset>'));
+      const onClick = vi.fn();
+      el.addEventListener('click', onClick);
+      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }));
+      expect(onClick).not.toHaveBeenCalled();
+    });
+
+    it('follows fieldset changes without changing its own disabled attribute', async () => {
+      const el = await render(form('<fieldset><cc-switch name="alerts" checked>Alerts</cc-switch></fieldset>'));
+      const fieldset = document.querySelector('fieldset')!;
+      fieldset.disabled = true;
+      await el.updateComplete;
+      expect(input(el).disabled).toBe(true);
+      expect(data().get('alerts')).toBeNull();
+      expect(el.hasAttribute('disabled')).toBe(false);
+      fieldset.disabled = false;
+      await el.updateComplete;
+      expect(input(el).disabled).toBe(false);
+      expect(data().get('alerts')).toBe('on');
+      el.click();
+      await el.updateComplete;
+      expect(el.checked).toBe(false);
+    });
+
+    it('keeps an explicitly disabled switch disabled when its fieldset is enabled', async () => {
+      const el = await render(form('<fieldset disabled><cc-switch disabled>Alerts</cc-switch></fieldset>'));
+      document.querySelector('fieldset')!.disabled = false;
+      await el.updateComplete;
+      el.click();
+      expect(input(el).disabled).toBe(true);
+      expect(el.checked).toBe(false);
+    });
+
+    it.each([false, true])('immediately follows fieldset changes from disabled=%s', async (disabled) => {
+      const el = await render(form(`<fieldset ${disabled ? 'disabled' : ''}><cc-switch>Alerts</cc-switch></fieldset>`));
+      const onChange = vi.fn();
+      el.addEventListener('change', onChange);
+      document.querySelector('fieldset')!.disabled = !disabled;
+      el.click();
+      expect(el.checked).toBe(disabled);
+      expect(onChange).toHaveBeenCalledTimes(disabled ? 1 : 0);
+    });
+
+    it('leaves a switch in the first legend of a disabled fieldset enabled', async () => {
+      const el = await render(form('<fieldset disabled><legend><cc-switch>Alerts</cc-switch></legend></fieldset>'));
+      el.click();
+      await el.updateComplete;
+      expect(input(el).disabled).toBe(false);
+      expect(el.checked).toBe(true);
+    });
+
     it('resets to its initial state', async () => {
       const el = await render(form('<cc-switch name="alerts" checked>Alerts</cc-switch>'));
       el.click();
